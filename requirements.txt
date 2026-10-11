@@ -1,0 +1,8 @@
+# Reference Linux GPU environment. Install the appropriate PyTorch CUDA wheel separately.
+numpy==1.24.4
+scipy==1.10.1
+scikit-learn==1.7.2
+torch==2.5.1
+timm==1.0.19
+safetensors==0.4.5
+matplotlib>=3.7,<4

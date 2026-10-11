@@ -1,0 +1,22 @@
+# Local research artifacts; publish core code only.
+/experiments/
+/runs/
+/paper/
+/tools/legacy/
+/research_registry.json
+/jepa_paper_draft.*
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+*.npz
+*.npy
+*.pt
+*.pth
+*.safetensors
+*.tar.gz
+*.log
+/models/
+/vendor/
+/data/

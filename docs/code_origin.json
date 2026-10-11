@@ -1,0 +1,26 @@
+{
+  "e03_core.py": {
+    "source": "experiments\\e03_directional_20261011\\e03_core.py",
+    "original_sha256": "76444bd3f5ebe870667f60bc7190457d31f3c9e69702c0f3cd818eff9900db65"
+  },
+  "e03_tests.py": {
+    "source": "experiments\\e03_directional_20261011\\e03_tests.py",
+    "original_sha256": "6e885faefac0d6aa7e204768fb026a84a6fb941001a02808e52a218804aa7183"
+  },
+  "e03_run.py": {
+    "source": "experiments\\e03_directional_20261011\\e03_run.py",
+    "original_sha256": "62cfa6df95286af4ba36c65f148f59737df9b67cf5c6709c9e7a4d7f73ac864a"
+  },
+  "e03_prepare.py": {
+    "source": "experiments\\e03_directional_20261011\\e03_prepare.py",
+    "original_sha256": "7fcd679fb71afa13b2a79bb8da111e6e9fa7e74a40dfb2d35e45fe0641c12b29"
+  },
+  "features.py": {
+    "source": "experiments\\e03_directional_20261011\\features.py",
+    "original_sha256": "2c2f91458384f116f0da682e5893dad2eea1ea3f588b79109daaf4116ba41062"
+  },
+  "validate_e03.py": {
+    "source": "experiments\\e03_directional_20261011\\validate_e03.py",
+    "original_sha256": "1612a0445c0104ce0f1e323e7c182818d3364eaa54c2f3458c26f6330c9d0b4f"
+  }
+}
