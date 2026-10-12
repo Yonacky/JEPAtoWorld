@@ -220,15 +220,15 @@ T系列延续S数据量假设，在3个新增任务各50demo上固定30train/10t
 |---|---|---|---|---|---|
 | G5h | G-5f / R2-5 / R2-6 | 真实轨迹F/m别名、施力加速度及停力滑动，ON/OFF配对机制 | 40scene生产分析与独立复算完成；2026-10-13 | mainline_history | OFF两等ratio全部121×13state精确同值，ON非零；dev同向；机器人运动/释放瞬态/冲量未闭合保留；[生产报告](contact_paired_mechanism_report_20261013.txt)，[旧诊断](contact_alias_diagnostics_report_20261013.txt) |
 | G5j | G-5f / R2-5 / R2-6 | 可观测F/m与质量/施力标量读出、known-force质量估计 | 6模型完成、独立复算通过；2026-10-13 | mainline_history | ratio dev R² ON .140/OFF .674；mass .133/.431、force .025/.245；known-force新增动作非独立证据；[报告](contact_ratio_readout_report_20261013.txt) |
-| G-5k | G5j / R2-6 | 可观测log(F/m)读出方向与残余诊断 | 18项完成并独立核验；2026-10-13，待根归档 | mainline_regroup 子智能体 | OFF PCA4/32 R² .595/.674，擦除单权重残余.388；监督1D为预测恒等，非独立因素；负控OFF .069保留；[报告](observable_direction_report_20261013.txt)，[清单](../runs/observable_direction_20261013/manifest.json)；LEACE只给有限建议未执行 |
-| G-5l | G-5k / R2-6 | 文献指导的有限LEACE诊断 | 固定4模型完成并独立核验；2026-10-13，停止扩展，证据台账已追加待归档 | mainline_regroup 子智能体 | fit16/probe8 matched OFF R² .594→.035，ON .048→.016；dev残余协方差非零、损伤16.1%；[报告](leace_observable_report_20261013.txt)，[清单](../runs/leace_observable_20261013/manifest.json)；有监督旧dev探索 |
-| P-0 | 论文证据 / R2-4 / R2-6 | 本轮研究收敛、Markdown初稿与授权推送 | 研究及稿件整合完成，发布核验中；2026-10-13 | 主智能体 | 整合G5k和文献筛选，逐论断证据核对，独立文献表、稿件、发布摘要与代码核验；用户本轮已明确授权一次推送，不含原始数据与凭据 |
+| G-5k | G5j / R2-6 | 可观测log(F/m)读出方向与残余诊断 | 18项完成并独立核验；2026-10-13，根已归档 | mainline_regroup 子智能体 | OFF PCA4/32 R² .595/.674，擦除单权重残余.388；监督1D为预测恒等，非独立因素；负控OFF .069保留；[报告](observable_direction_report_20261013.txt)，[清单](../runs/observable_direction_20261013/manifest.json)；后续有限LEACE已另立G-5l完成，原G5k不改写 |
+| G-5l | G-5k / R2-6 | 文献指导的有限LEACE诊断 | 固定4模型完成并独立核验；2026-10-13，停止扩展，证据台账及根归档完成 | mainline_regroup 子智能体 | fit16/probe8 matched OFF R² .594→.035，ON .048→.016；dev残余协方差非零、损伤16.1%；[报告](leace_observable_report_20261013.txt)，[清单](../runs/leace_observable_20261013/manifest.json)；有监督旧dev探索 |
+| P-0 | 论文证据 / R2-4 / R2-6 | 本轮研究收敛、Markdown初稿与授权推送 | 本轮完成、归档并发布核验；2026-10-13 | 主智能体 | 整合G5k和文献筛选，逐论断证据核对，独立文献表、稿件、发布摘要与代码核验；[稿件](../paper/manuscript.md)、[发布核验](../paper/results/release_validation.json)及[89b2656](https://github.com/Yonacky/JEPAtoWorld/commit/89b26560ac964da34afa38dd03f77b6e474c143f)；198文件按本轮授权发布，不含原始数据与凭据 |
 | P-1 | 论文证据 / R2-6 | 原始文献定位与审稿风险评估 | 完成首轮核验与有限路线筛选；2026-10-13 | mainline_history | 稳定引用ID、原始来源与经验分级；DSReg身份核实，近期直接近邻明确；[文献登记](../paper/references.md)、[审稿评估](../paper/reviewer_assessment.md)；OpenReview一项待核 |
 | P-4 | P-1 / 论文证据 | 正文第2节逐论断文献对齐 | 完成并核验其他节文本不变；2026-10-13 | mainline_history | 已核实原始来源逐论断外链，明确直接近邻及有限增量；[正文第2节](../paper/manuscript.md)；第1/3/6节引用建议交根 |
 
-| P-2 | 论文证据 / R2-6 | 事实证据账本、旧稿定位与F/m别名上限推导 | 完成并核对32个证据链接；2026-10-13 | mainline_local_fourway | [账本](../paper/evidence_ledger.md)含W80对逐值别名、6读出、G5g、静态OOD失败与DSReg适配边界；7/9分类界附条件证明，旧稿未改；父P-0整合中 |
+| P-2 | 论文证据 / R2-6 | 事实证据账本、旧稿定位与F/m别名上限推导 | 完成并核对32个证据链接；2026-10-13 | mainline_local_fourway | [账本](../paper/evidence_ledger.md)含W80对逐值别名、6读出、G5g、静态OOD失败与DSReg适配边界；7/9分类界附条件证明，旧稿未改；已由P-0整合 |
 
-| P-3 | P-0 / R2-6 | 初稿只读证据审稿与G5k清单核验 | 完成；2026-10-13 | mainline_local_fourway | [审稿](../paper/evidence_review_p3.md)要求7/9加OFF同值条件、LEACE共享PCA说明与辅助结果直接来源；[26/26哈希](../paper/p3_hash_validation.json)全匹配；正文未改，待P-0合并 |
+| P-3 | P-0 / R2-6 | 初稿只读证据审稿与G5k清单核验 | 完成；2026-10-13 | mainline_local_fourway | [审稿](../paper/evidence_review_p3.md)要求7/9加OFF同值条件、LEACE共享PCA说明与辅助结果直接来源；[26/26哈希](../paper/p3_hash_validation.json)全匹配；建议已由P-0合并，审稿原记录保留 |
 
 ## 已完成批次记录
 
@@ -365,3 +365,5 @@ T系列延续S数据量假设，在3个新增任务各50demo上固定30train/10t
 | 2026-10-13 | P-1/P-4补充数据与基线出处并同步LEACE | CausalWorld/LIBERO官方来源、SFA/PCA及DSReg实现边界入登记 | G5l改为有限连续目标扩展完成，未称held完全擦除；正文仍仅改第2节 |
 
 | 2026-10-13 | G5k/G5l有限探索与论文证据审稿合并 | 低维可读、单轴残余及LEACE有限压低形成明确结论，停止开发集扩参 | 已按P3修订别名条件/共享PCA/辅助结果来源；原父路线未全部完成；一次用户授权发布准备中 |
+
+| 2026-10-13 | P-0本轮研究、写作与授权发布完成 | G5k/G5l共22项诊断，38清单哈希、82源码语法、6设备测试、16合成检查通过；61文件本地归档 | Git常规网络故障，使用既有授权GitHub Git Data API非强制发布；本地与远端tree/commit逐值一致；原R2父路线仍部分完成 |

@@ -24,3 +24,6 @@ __pycache__/
 /models/
 /vendor/
 /data/
+
+# Generated local core self-test; published copy is in paper/results.
+/core/e03/selftest.json
