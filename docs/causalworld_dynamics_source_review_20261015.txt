@@ -1,0 +1,12 @@
+G-5a生产源码独立审查（2026-10-12）
+已审scripts/generate_causalworld_dynamics_20261015.py，未修改生成器或协议。未发现阻断当前生产的状态或划分错误。质量和摩擦分开setter避免legacy elif遗漏；每branch重置stage缓存并恢复含物体client Bullet snapshot，惯量按该scene基准×mass/.02设置。最后force-high分支的mass=.02/friction=.175，因此下一scene不存在mass-high惯量倍数继续累乘。独立数据审计另核所有scene的inertia/mass恒定，防止实际实现偏离此推断。
+
+每scene先重置机器人关节与速度、物体位姿/速度和基准质量/摩擦，再运行120步settle；同scene分支恢复相同世界保存点，具有配对比较意义。未每scene新建世界，未单独证明solver/controller残留全部消失；场景组独立性不能仅由随机xy/yaw和split声称。现有重放核验仅覆盖同scene分支，不能替代从全新进程单独生成某scene的独立复现。
+
+fullstates数组实际是tool body的13维位姿/速度在全部121时刻，不是完整Bullet世界状态。机器人关节实际演化、控制器内部状态、contact对手身份没有保存在数组；仅接触计数不能排除机器人接触。可表述为固定CausalWorld/Bullet fixture中同初态、同外力序列的干预效应，不能推广为无接触动力学或由解析F/m唯一识别物理量。
+
+实际object client0包含body4，goal-only client1不含tool，不步进不破坏tool动力学比较；不能笼统声称所有环境client均已动力推进。外力按源码在每步前30次同世界+x方向作用于当时质心，records保存force_n但不是独立力传感日志。质量和摩擦记录来自getDynamicsInfo，惯量也保存实际查询值。
+
+dataset每scene只7个唯一分支，baseline额外重放排除，按scene固定24/8/8；每因子平衡low/baseline/high共享baseline引用，不将中值按其他4个因子分支重复计数。7分支单因素设计未交叉变化F/m，不能排除不可辨混淆。
+
+独立验证入口scripts/verify_causalworld_dynamics_20261015.py从dataset、fullstates和records重算，不依赖producer checks中的成功标记。输出初态/重放误差、所有120因子对差异、实际物理参数与inertia/mass、scene split和time、baseline合法引用。运行完成前不把数据验证标为通过。

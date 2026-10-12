@@ -6,10 +6,11 @@ from scipy import linalg as la
 import torch
 import torch.nn.functional as F
 from e03_core import *
+from device_utils import activate_device
 
 R=pathlib.Path(__file__).parent;cfg=json.loads((R/'protocol.json').read_text());selftest=json.loads((R/'selftest.json').read_text())
 assert selftest['all_passed'] and selftest['core_sha256']==hashlib.sha256((R/'e03_core.py').read_bytes()).hexdigest()
-torch.set_num_threads(6);torch.cuda.set_device(0);start=time.time();rows=[];probes=[];structures=[];checks=[]
+torch.set_num_threads(6);device=activate_device();start=time.time();rows=[];probes=[];structures=[];checks=[]
 for n in ['cache','transforms','models','probes']:
  # models is the pre-existing read-only checkpoint symlink; prediction fits get a separate folder.
  if n!='models':(R/n).mkdir(exist_ok=True)
@@ -17,7 +18,7 @@ for n in ['cache','transforms','models','probes']:
 def atomic(p,obj):
  tmp=p.with_suffix('.tmp');tmp.write_text(json.dumps(obj,indent=2));tmp.replace(p)
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-codehash={p.name:sha(p) for p in R.glob('e03_*.py')};atomic(R/'run_source_snapshot.json',{'code':codehash,'protocol_sha256':sha(R/'protocol.json'),'start_unix':start})
+codehash={p.name:sha(p) for p in R.glob('*.py')};atomic(R/'run_source_snapshot.json',{'code':codehash,'protocol_sha256':sha(R/'protocol.json'),'start_unix':start,'device':str(device)})
 for ds in cfg['datasets']:
  data=np.load(R/'prepared'/f'{ds}.npz');allY,groups=encode_targets(ds,data['latents'],data['keys'].tolist());atomic(R/f'{ds}_factor_schema.json',groups)
  for enc in cfg['encoders']:
@@ -38,7 +39,7 @@ for ds in cfg['datasets']:
    U,sv,Vh=la.svd(C[0],full_matrices=False);initials=[eye,sfa,qs]
    methods=[('white',eye,eye,{}),('random_Q',randomQ,randomQ,{}),('sfa',sfa,sfa,{}),('sfa_time_shuffle',shuffle,shuffle,{})]
    for name,operators,b in [('sym_block4',Cs,4),('full_block2',C,2),('full_block4',C,4),('full_block8',C,8)]:
-    q,info=optimize_joint(operators,b,initials,steps=250);methods.append((name,q,q,info))
+    q,info=optimize_joint(operators,b,initials,steps=250,device=device);methods.append((name,q,q,info))
    methods += [('real_schur',qs,qs,{'natural_group_sizes':[len(g) for g in natural],'reconstruction_error':float(np.max(np.abs(A-qs@ts@qs.T))),'off_natural_block_energy':float(np.sum((ts*mask_for(natural,n))**2)/np.sum(ts*ts))}),('lag_svd_dual',U,Vh.T,{'singular_values':sv.tolist(),'scope':'past and future use different orthogonal bases'})]
    dense_mse={};dense_probe=None
    for name,ql,qr,info in methods:
@@ -69,5 +70,5 @@ for ds in cfg['datasets']:
     print('DONE',tag,name,'forecast_rows',len(rows),flush=True)
    atomic(R/'progress.json',{'completed':tag,'seconds':time.time()-start})
 assert len(rows)==24*(10*15+3) and len(probes)==24*10*4
-assert codehash=={p.name:sha(p) for p in R.glob('e03_*.py')},'code changed during run'
+assert codehash=={p.name:sha(p) for p in R.glob('*.py')},'code changed during run'
 atomic(R/'COMPLETE.json',{'forecast_rows':len(rows),'probe_rows':len(probes),'transform_fits':len(structures),'seconds':time.time()-start,'phase':cfg['phase'],'official_test_access':False});print('COMPLETE',len(rows),len(probes),flush=True)

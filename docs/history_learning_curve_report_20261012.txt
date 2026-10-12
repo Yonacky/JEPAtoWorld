@@ -1,0 +1,59 @@
+S-2 固定目标空间历史路线学习曲线；2026-10-12。
+结论：数据量不足是此前部分负结果的重要因素。扩到42条训练demo后，完整历史的位移读出和未来表示预测明显改善，预测导向压缩也改善；未来预测在42条时追平或小幅互有胜负，没有建立跨任务、跨时距稳定超过当前帧的优势。不能把此前12条数据上的结果概括成历史路线无效，也不能把42条结果当作完整动力学证明。
+每任务保留原tune4/dev4，训练12/24/42。12及42各算一次，24按seed20261012/13/14三个新增子集，不选最佳子集。三个24范围仅表示子集选择范围，不是置信区间。仍是反复使用的4条dev，不是新确认；各任务分别拟合，非零样本跨任务泛化。
+共同目标空间是旧12train缓存全部帧的PCA64白化映射，预测未来4/8原始帧；该映射和各目标原12共同窗口尺度在所有规模冻结。每规模输入PCA64重新仅train拟合；历史256、PCA历史64、RRR64，lambda=.01固定。RRR也使用该冻结未来目标，是任务对齐学习与可比性控制。
+本轮tune改用demo等权选择正则（G-1为帧加权tune），评价同样demo等权。因此12条基线已重新计算，只比较S-2内部曲线，不与旧G-1数值直接拼接。拟合仍帧加权，长demo训练贡献较多。
+状态/位移同时保存原单位平方误差与固定旧12train尺度MSE；位移是后向4原始帧位置差，不是速度。JSON字段macro_physical_mse对未来组实为固定latent坐标原尺度误差，并非物理单位；未来图采用冻结尺度归一MSE。
+
+stove：method / 位移12→42 / future4原帧12→42 / future8原帧12→42
+current64 / 0.303951→0.327988 / 0.803413→0.687256 / 0.966756→0.802829
+history256 / 0.258139→0.117819 / 0.924196→0.704936 / 0.970645→0.791547
+history_pca64 / 0.260756→0.310676 / 0.907408→0.770360 / 0.969955→0.839077
+history_rrr64 / 0.314711→0.226510 / 1.003478→0.718642 / 0.991199→0.807226
+current64 backward_displacement 12减42改善=-0.024037，配对demo条件CI=[-0.04262914055318825, 0.0026162512244137723]
+current64 future4frames 12减42改善=0.116157，配对demo条件CI=[0.09240480572169393, 0.13380910742060756]
+history256 backward_displacement 12减42改善=0.140319，配对demo条件CI=[0.1201221383406581, 0.16750182014769519]
+history256 future4frames 12减42改善=0.219260，配对demo条件CI=[0.18217532142895337, 0.26384308292605946]
+history_pca64 backward_displacement 12减42改善=-0.049920，配对demo条件CI=[-0.09558974714849611, -0.005057144789847756]
+history_pca64 future4frames 12减42改善=0.137047，配对demo条件CI=[0.09603112802920813, 0.2027861337380263]
+history_rrr64 backward_displacement 12减42改善=0.088201，配对demo条件CI=[0.04070878140599545, 0.13675488392535068]
+history_rrr64 future4frames 12减42改善=0.284836，配对demo条件CI=[0.21717996899925127, 0.34030124108702386]
+独立直接解最大差=4.847233725513433e-13；落盘评分复算差=2.220446049250313e-16；旧特征差=0.0
+
+drawer：method / 位移12→42 / future4原帧12→42 / future8原帧12→42
+current64 / 0.215960→0.153335 / 0.794450→0.662797 / 0.992259→0.799909
+history256 / 0.198107→0.093577 / 0.941856→0.663228 / 1.020884→0.801186
+history_pca64 / 0.185471→0.144154 / 0.920923→0.746021 / 1.023617→0.851947
+history_rrr64 / 0.206392→0.127403 / 1.014649→0.668876 / 1.042382→0.793274
+current64 backward_displacement 12减42改善=0.062625，配对demo条件CI=[0.00703387997936164, 0.13100334964436394]
+current64 future4frames 12减42改善=0.131653，配对demo条件CI=[0.06257207707654389, 0.2010681077035144]
+history256 backward_displacement 12减42改善=0.104531，配对demo条件CI=[0.04112784496023702, 0.20866024106915582]
+history256 future4frames 12减42改善=0.278627，配对demo条件CI=[0.19497810685141245, 0.36300809727740513]
+history_pca64 backward_displacement 12减42改善=0.041316，配对demo条件CI=[-0.012429490400634721, 0.11577080590339167]
+history_pca64 future4frames 12减42改善=0.174902，配对demo条件CI=[0.06820671339126474, 0.2703430430926709]
+history_rrr64 backward_displacement 12减42改善=0.078989，配对demo条件CI=[0.03471716617927152, 0.16029341912798306]
+history_rrr64 future4frames 12减42改善=0.345774，配对demo条件CI=[0.2648218018318048, 0.42864776474093924]
+独立直接解最大差=2.2276624989103766e-13；落盘评分复算差=2.220446049250313e-16；旧特征差=0.0
+
+解释：完整历史需要更多训练数据才能估计较多方向；42条时位移改善较明确，但未来表示误差尚未明显优于当前帧。PCA64的stove位移反而随数据增加变差，提示重构方差目标不保证保留运动信息。RRR比PCA未来预测更好，与强单帧追平或小幅互有胜负，因此样本量与压缩目标都影响结论，不能只归因其中之一。
+未追加模型/超参搜索，也未用dev选择训练子集。训练规模只覆盖12至42，不能外推成已收敛或更多数据必然胜出。状态和表示预测仍不能替代动作/质量/摩擦干预。
+图：runs/history_learning_curve_summary_20261012/history_learning_curves.png及.pdf；两任务完整预测、配置、实际demo名单、固定目标映射及数值核验均保留。
+
+42条训练demo的路线配对差（参照减方法，正值改善；固定4条dev条件区间）：
+{'task': 'stove', 'method': 'history256', 'reference': 'current64', 'target': 'future4frames', 'positive_improves': -0.017679984515172165, 'paired_demo_ci95': [-0.03131981343074716, -0.004811296822218258]}
+{'task': 'stove', 'method': 'history256', 'reference': 'current64', 'target': 'future8frames', 'positive_improves': 0.011281080357718354, 'paired_demo_ci95': [-0.023892647074856888, 0.03145654657433178]}
+{'task': 'stove', 'method': 'history_pca64', 'reference': 'current64', 'target': 'future4frames', 'positive_improves': -0.08310408198746652, 'paired_demo_ci95': [-0.12161481520881864, -0.04590226891239346]}
+{'task': 'stove', 'method': 'history_pca64', 'reference': 'current64', 'target': 'future8frames', 'positive_improves': -0.036248353840951875, 'paired_demo_ci95': [-0.06827259864885568, -0.005402916091491516]}
+{'task': 'stove', 'method': 'history_rrr64', 'reference': 'current64', 'target': 'future4frames', 'positive_improves': -0.031385863330071484, 'paired_demo_ci95': [-0.050629506401840996, -0.012142220258301972]}
+{'task': 'stove', 'method': 'history_rrr64', 'reference': 'current64', 'target': 'future8frames', 'positive_improves': -0.0043978296896783065, 'paired_demo_ci95': [-0.04231123555581667, 0.024265764826055053]}
+{'task': 'stove', 'method': 'history256', 'reference': 'history_pca64', 'target': 'backward_displacement', 'positive_improves': 0.19285669014505225, 'paired_demo_ci95': [0.100383854377397, 0.31036890573004816]}
+{'task': 'stove', 'method': 'history256', 'reference': 'history_rrr64', 'target': 'backward_displacement', 'positive_improves': 0.10869018172503425, 'paired_demo_ci95': [0.07279620988153754, 0.1621407327856829]}
+{'task': 'drawer', 'method': 'history256', 'reference': 'current64', 'target': 'future4frames', 'positive_improves': -0.0004311268557828929, 'paired_demo_ci95': [-0.028715179795442802, 0.027852926083877017]}
+{'task': 'drawer', 'method': 'history256', 'reference': 'current64', 'target': 'future8frames', 'positive_improves': -0.0012774112780842561, 'paired_demo_ci95': [-0.0132631463576256, 0.010708323801457087]}
+{'task': 'drawer', 'method': 'history_pca64', 'reference': 'current64', 'target': 'future4frames', 'positive_improves': -0.0832233853733104, 'paired_demo_ci95': [-0.12716715482430893, -0.04221254730568941]}
+{'task': 'drawer', 'method': 'history_pca64', 'reference': 'current64', 'target': 'future8frames', 'positive_improves': -0.052038032720800015, 'paired_demo_ci95': [-0.07065343445696404, -0.03342263098463599]}
+{'task': 'drawer', 'method': 'history_rrr64', 'reference': 'current64', 'target': 'future4frames', 'positive_improves': -0.00607843765507074, 'paired_demo_ci95': [-0.03506931090912041, 0.02291243559897893]}
+{'task': 'drawer', 'method': 'history_rrr64', 'reference': 'current64', 'target': 'future8frames', 'positive_improves': 0.006634510825214851, 'paired_demo_ci95': [-0.007528289104369756, 0.02079731075479946]}
+{'task': 'drawer', 'method': 'history256', 'reference': 'history_pca64', 'target': 'backward_displacement', 'positive_improves': 0.05057739274822122, 'paired_demo_ci95': [0.026765487807070387, 0.07438929768937205]}
+{'task': 'drawer', 'method': 'history256', 'reference': 'history_rrr64', 'target': 'backward_displacement', 'positive_improves': 0.033826122515202575, 'paired_demo_ci95': [0.014852818540536168, 0.047861348952502034]}
+未来8帧：stove全历史MSE0.7915优于当前0.8028，drawer RRR0.7933优于当前0.7999；这些小差距必须结合上列4-demo条件区间，不能概括为历史从未超过单帧。

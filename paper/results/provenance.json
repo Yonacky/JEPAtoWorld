@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-13",
+  "scope": "Small copied summaries; source bytes unchanged. Raw data and full manifests remain local.",
+  "files": [
+    {
+      "source": "runs/contact_ratio_readout_20261013/results.json",
+      "published": "paper/results/ratio_readout.json",
+      "sha256": "6d3121d30f13bb93b014159222deabc1dce444447a1ee013d360509361e9e0e9",
+      "bytes": 5032
+    },
+    {
+      "source": "runs/contact_ratio_readout_20261013/independent_validation.json",
+      "published": "paper/results/ratio_validation.json",
+      "sha256": "d9e278c163075d5374fe724be2241b2587cb49307d398753d09f736808efd973",
+      "bytes": 1318
+    },
+    {
+      "source": "runs/contact_paired_representation_20261013/results.json",
+      "published": "paper/results/representation_distances.json",
+      "sha256": "80f31b505383bb39d9867885a830b687e7c6f78b28ed6dc045ecf9ad6a12302d",
+      "bytes": 679852
+    },
+    {
+      "source": "runs/observable_direction_20261013/results.json",
+      "published": "paper/results/observable_direction.json",
+      "sha256": "2e08b5b85c15b0cddfe2510fdc9151e1b119bd1b88c23dde25c9aaeb5bb4e9d8",
+      "bytes": 11865
+    },
+    {
+      "source": "runs/leace_observable_20261013/results.json",
+      "published": "paper/results/leace_readout.json",
+      "sha256": "7f4b31fed9955a430d3599434afd98e5a2ef86bff48a740a7aa2d2a4d1fe658d",
+      "bytes": 5252
+    },
+    {
+      "source": "runs/contact_mechanism_figures_20261013/equal_ratio_contact_effect.png",
+      "published": "paper/figures/equal_ratio_contact_effect.png",
+      "sha256": "ebf0edaf5bb6dd2e3a02822f6450c03d77db0a60df49a6f0ffebe3561518253c",
+      "bytes": 117281
+    },
+    {
+      "source": "runs/contact_mechanism_figures_20261013/equal_ratio_contact_effect.svg",
+      "published": "paper/figures/equal_ratio_contact_effect.svg",
+      "sha256": "5aee9865d9c869c5bcbb120154507f58bfd585030fe09014f4af0c7311f33d5b",
+      "bytes": 69934
+    },
+    {
+      "source": "runs/contact_mechanism_figures_20261013/contact_scaling_symmetry.png",
+      "published": "paper/figures/contact_scaling_symmetry.png",
+      "sha256": "98056ca58c42a5089a7b1cde8be491e7e6e2429d72a9b1e810bde303b36dfe5f",
+      "bytes": 186350
+    },
+    {
+      "source": "runs/contact_mechanism_figures_20261013/contact_scaling_symmetry.svg",
+      "published": "paper/figures/contact_scaling_symmetry.svg",
+      "sha256": "4738d7052b7b63afd2f7bf34f39b4ac44092e7531cff1043d6dede45bc9ab966",
+      "bytes": 160988
+    },
+    {
+      "source": "runs/leace_observable_20261013/independent_validation.json",
+      "published": "paper/results/leace_validation.json",
+      "sha256": "cb0fa1c818be278a1dcf1504755f3ea19d45bef7d66a4fa05d312227e6ef4b82",
+      "bytes": 735
+    }
+  ]
+}

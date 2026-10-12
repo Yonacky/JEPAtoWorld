@@ -1,0 +1,12 @@
+G-5d 质量×外力交叉协议（2026-10-13冻结）
+新seed20261016，40scene按24/8/8整组拆分；每scene质量[.01,.02,.04]kg×外力[.01,.02,.03]N共9branch，摩擦固定.175。9个采样时刻[0,1,5,10,20,30,60,90,120]，dt=.004，总3240帧。外力world+x于瞬时质心，前30步每步施加，随后90步无外力。物体状态及接触日志保存，未改变旧fixture/控制器。
+
+每scene基准质量.02、摩擦.175及惯量显式重置，惯量来自初始化实际DynamicsInfo的固定形状inertia/mass模板；每branch实际质量/摩擦/inertia均再查询。baseline(.02,.02)只有一个学习episode，额外repeat只用于恢复检查。所有9格保留，包括弱效应/零效应；PASS_INVARIANTS只表示初态、恢复、参数、schema检查通过，可见性另报，不能筛掉不可区分组合。
+
+(.01,.01)与(.02,.02)、(.02,.01)与(.04,.02)分别等F/m，仅比较整段位姿/速度差和图像差。接触摩擦、惯量、求解器和机器人接触可打破简化，不能要求相同或因不同就判物理错误；九格也不自动建立唯一物理可辨识。
+
+冻结跨条件评价与G-5d-eval一致：质量分类只用低/高外力train24+tune8，目标三质量保留，在dev8报告未见中外力和已见外力条件；外力分类反向只用低/高质量train+tune，在dev中质量评分。中间值是数值范围内插值的未见条件，不称范围外外推。另列全部9格训练的联合分布参照，不按dev择优。grid视觉和tool位置/速度分开，固定t120与concat(delta30,delta120)两个输入。物理标签、实际force/mass/inertia及contact日志不进入输入。t0同图同state应为chance，先检查其数值同一性。
+
+按scene整组划分，任何同scene九branch不跨split。原始行schema含scene/mass_level/force_level及episode/frame，特征与状态必须逐行对应。八个dev场景限制保留；不以帧数充当独立样本数。仅有监督因素读出，不称无监督解释、跨机器人泛化或质量/外力因果唯一识别。
+
+每scene没有重建Bullet世界，保留此前G-5a跨scene solver/controller历史未完全独立清零的限制；同scene分支save/restore和repeat只能证明配对恢复。fullstates为tool物体13维完整时间序列，不是完整世界快照。新增每sample contact对手bodyID和normalForce仅辅助解释，不改变物理模型。

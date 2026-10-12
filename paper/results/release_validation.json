@@ -1,0 +1,170 @@
+{
+  "status": "passed",
+  "date": "2026-10-13",
+  "manifest_entries_verified": 38,
+  "copied_summary_entries_verified": 10,
+  "python_ast_files": 82,
+  "device_policy_tests": 6,
+  "core_synthetic_tests": 16,
+  "secret_scan_files": 194,
+  "secret_pattern_hits": 0,
+  "scope": "Numerical and artifact checks, not independent scientific confirmation",
+  "validation_runner_repairs": [
+    "Resolved manifest paths relative to repository, not manifest directory",
+    "Accepted existing string hash schema as well as object schema; no experiment files changed"
+  ],
+  "entries": [
+    {
+      "source": "runs/observable_direction_20261013/config.json",
+      "sha256": "5a1cc3d2232d4a79cd30759cc613ca490b9fee3cdd94c4a1e9b51edd4f75798a"
+    },
+    {
+      "source": "runs/observable_direction_20261013/independent_validation.json",
+      "sha256": "cb95abd746300f72d80d6cb3d887cbce5811e0459c9e40f3155fa632120fc9cd"
+    },
+    {
+      "source": "runs/observable_direction_20261013/mapping.npz",
+      "sha256": "2120d4099ef84bcc929392b49f047b73aabb48d7fa7dbf8f35d7126b90ae23b7"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_pca1.npz",
+      "sha256": "4b8a30438b4b2cce027f79ede299ac3109a9ddbcbade74084b16c6e1b476036b"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_pca16.npz",
+      "sha256": "d1657226474df10f6d30dd435642b732d4a957204a09ab5e6a0b1e872558c642"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_pca2.npz",
+      "sha256": "df1ee4d4d4a5d2e0ea17fc4f1fb63357af53710adfe26cb9b676cf34fc84986f"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_pca32.npz",
+      "sha256": "77d3ec1beeebdaa9234d37a64156ef0c5cf0e9490a913ec891eec300ad26d887"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_pca4.npz",
+      "sha256": "12f08a563c3f0adacd39c0f05ee0582be03a6b7a91a9094dff054ad70ba477a9"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_pca8.npz",
+      "sha256": "3b108d5f0be4a5fe1db527ded5c1835036799ca570b8db157d37de0e67fc0b9d"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_residual31.npz",
+      "sha256": "686b46c2c1da41661beae48fb18ade4289b7acb1a024c39b4ae5064fa65a583b"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_shuffled32.npz",
+      "sha256": "302bab4dee10acbd24de39202e314f4cc50331d0a30ecff472c5c6ac8cd1e115"
+    },
+    {
+      "source": "runs/observable_direction_20261013/off_supervised1.npz",
+      "sha256": "4f998ef1aea6cdb388895a658daf0354602b0deb1fca6d2c13a5a7f8d14f4ea1"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_pca1.npz",
+      "sha256": "ffe3d3397a17bb9bbb86a86aa6d4293bbc652b82a7adb586383c638f6ed09bd7"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_pca16.npz",
+      "sha256": "f64bacc5e6d4c6f22c9e0b4d196c4415fe51160bd5cd7fc7dc362a60e3eef248"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_pca2.npz",
+      "sha256": "f8078904d679ef52f2e2689128049a89d3d10bf399d69ddfe4582a5e9dbd5f93"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_pca32.npz",
+      "sha256": "94447dd9a2a92631aec755b6d80bd686606bf53968087b50720aa0dba87135af"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_pca4.npz",
+      "sha256": "ea50a5a22c92838d023cc5e8c7e6d5f6653c83725010cd73364656d8cf0f6772"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_pca8.npz",
+      "sha256": "aed08b4e8230245b696638b3cd9f1e9228dc087adfadaee8dd022a655a196cb5"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_residual31.npz",
+      "sha256": "209a217ccb9a6fd5736e025609d8a38bf4b831a58f55b3c23d38b7ee9e8f93ca"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_shuffled32.npz",
+      "sha256": "23ff00250b3ef2b4f0944f8aad1581fe31ad2964ff10aa72743a8ab7d175c096"
+    },
+    {
+      "source": "runs/observable_direction_20261013/on_supervised1.npz",
+      "sha256": "f0ff40b755280e26a754a96540d070238132960e47acc3bab866febfdb72bd7f"
+    },
+    {
+      "source": "runs/observable_direction_20261013/results.json",
+      "sha256": "2e08b5b85c15b0cddfe2510fdc9151e1b119bd1b88c23dde25c9aaeb5bb4e9d8"
+    },
+    {
+      "source": "docs/observable_direction_report_20261013.txt",
+      "sha256": "fab0388917fd417eef5a801194703aaa087240b7ea0dd5b165d238388fba100b"
+    },
+    {
+      "source": "scripts/observable_direction_20261013.py",
+      "sha256": "439b22e0e10812f248414a1651c503e34180798ac74e56854b5b9883f042682b"
+    },
+    {
+      "source": "scripts/contact_ratio_readout_20261013.py",
+      "sha256": "667d3cd41a4967ce07c1e3dead42f8a71f42b31a9528dc004285a4dfd8e23c60"
+    },
+    {
+      "source": "docs/contact_ratio_readout_protocol_20261013.txt",
+      "sha256": "fdc79ba1cd84b773e4df66d95fff974697dd8b8c8821a39c3d2ba3a0984c7d5f"
+    },
+    {
+      "source": "runs/leace_observable_20261013/config.json",
+      "sha256": "f86dce00f5352764aa4d249e91cf83bb4f679207f83ef790c2bd3a3bc6adca8f"
+    },
+    {
+      "source": "runs/leace_observable_20261013/independent_validation.json",
+      "sha256": "cb0fa1c818be278a1dcf1504755f3ea19d45bef7d66a4fa05d312227e6ef4b82"
+    },
+    {
+      "source": "runs/leace_observable_20261013/off_leace32.npz",
+      "sha256": "a87bca7ae3e5d91fb135176d8e65b4abe0d45def11c82f15257710357f20389b"
+    },
+    {
+      "source": "runs/leace_observable_20261013/off_raw32.npz",
+      "sha256": "34a65a91d004b7d544b029343e54a6e7cc349a561711e84916095453d6997ee0"
+    },
+    {
+      "source": "runs/leace_observable_20261013/on_leace32.npz",
+      "sha256": "249290e4d5c9c467ce0225a2e3e60a6c5d9edd8128f335eaf226fcc724bf7bc9"
+    },
+    {
+      "source": "runs/leace_observable_20261013/on_raw32.npz",
+      "sha256": "bfeb395be842ec3bd081ffcdd0c3063c9979b2356d284eabf692aa6f02dabbfc"
+    },
+    {
+      "source": "runs/leace_observable_20261013/results.json",
+      "sha256": "7f4b31fed9955a430d3599434afd98e5a2ef86bff48a740a7aa2d2a4d1fe658d"
+    },
+    {
+      "source": "runs/leace_observable_20261013/transforms.npz",
+      "sha256": "c191aa2e4517a867a2fe7362e5f01863c3105c19f665c72ef316bcec7bddf201"
+    },
+    {
+      "source": "docs/leace_observable_report_20261013.txt",
+      "sha256": "8487dd365c015c05c18c9a24803bb2cb08954afb9aede60d08fcb81dce0756cb"
+    },
+    {
+      "source": "scripts/leace_observable_20261013.py",
+      "sha256": "611c248b55aaa964a4f2309aa6ac445d1387961f384af9719f7ddac6a6219bb3"
+    },
+    {
+      "source": "scripts/contact_ratio_readout_20261013.py",
+      "sha256": "667d3cd41a4967ce07c1e3dead42f8a71f42b31a9528dc004285a4dfd8e23c60"
+    },
+    {
+      "source": "docs/leace_observable_protocol_20261013.txt",
+      "sha256": "031474d6bc9aaf65d7df576b39edeb81858312bf36e36a1b63111364556db162"
+    }
+  ]
+}

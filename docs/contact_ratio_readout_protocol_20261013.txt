@@ -1,0 +1,9 @@
+G5j 可观测组合读出冻结协议（2026-10-13，生产结果读取前）
+
+目的：比较隐藏质量、隐藏施力及可观测组合F/m的监督读出，而非要求物理别名组可独立分离。ON/OFF各自拟合，不共享测试信息。输入固定grid的concat(z30-z0,z120-z0)，仅训练scene拟合中心化、不白化PCA32（数值秩不足取实际秩），不增加时距或表示搜索。
+
+固定40scene的24/8/8互斥划分，每scene九组合。每mode三个独立标量目标ln(F/m)、ln(mass_kg)、ln(force_N)，共6模型。每个目标仅用本mode train的mean/std标准化；ridge目标为mean平方损失+alpha范数，五alpha=[1e-5,.001,.1,1,10]，按tune scene等权MSE最小选，平手取顺序先者。所有scene九组合等量。PCA使用本mode全部216train分支，不接触tune/dev。dev各72branch，报告scene等权log原尺度MSE、固定train标准化MSE、R2与每scene误差；R2定义1-SSE/SST（dev真值均值），不以dev选择模型。
+
+已知施力动作的质量估计不再训练：ln(mass_hat)=ln(F_true)-ln(ratio_hat)。因此其log质量误差与ratio预测误差仅差符号，原尺度logMSE数学相同；它新增真实施力动作信息，不是纯视觉公平比较，也不是独立证据。保持九格七ratio的别名限定，不从分类chance推断完全不可观测。
+
+保存全部train/tune/dev索引、PCA、目标尺度、五alpha tune损失、选中权重、dev预测真值与scene。用独立SVD闭式岭回归重选同alpha并复算预测，重新从保存预测计算指标。保存代码与原始输入SHA256、源metadata及manifest。CPU运行，无新增超参。物理配对主线优先，数据/特征齐全才执行。审计2scene不可作为此读出训练数据。

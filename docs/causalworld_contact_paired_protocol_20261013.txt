@@ -1,0 +1,16 @@
+G-5f 同保存初态的机器人碰撞ON/OFF配对协议（2026-10-13冻结）
+目的：检验此前物理九格中的机器人接触是否影响轨迹及视觉表示读出，不预设移除接触使质量更可辨。该干预改变机器人—tool碰撞规则，机器人保持可见且控制设置不变；不是将机器人从场景删除，也不是天然无机器人实验。
+
+先2scene审计seed20261017；通过后40scene生产seed20261018，固定24/8/8按scene划分。同scene ON/OFF和所有mass×force组合始终同split。每scene新建CausalWorld环境，重设位姿速度与基准参数，在ON碰撞下settle120步后保存同一snapshot。两个mode均从它恢复；不为OFF另做settle，因为那会改变待比较初态。
+
+质量[.01,.02,.04]kg×外力[.01,.02,.03]N，摩擦.175，九格每mode一次；mode内baseline额外repeat只核验，排除学习。每branch120物理步、dt=.004，前30步world+x质心力，31..120无外力。图像固定0/1/5/10/20/30/60/90/120九时刻，生产40×2×9×9=6480帧，720唯一学习episode及80baseline重放。
+
+每branch恢复所有含tool client snapshot后，显式对robot所有link（含base -1）与tool base设置setCollisionFilterPair enable=1或0；固定形状inertia/mass模板按实际质量重新设置，mass/friction分开setter。ON/OFF初始tool、所有世界body位姿速度、robot全部关节位置速度必须一致，图像逐值相同。保存实际getBodyInfo映射、physics参数、filter调用配置与实际getDynamicsInfo。Bullet无直接filter读取接口，是否有效由OFF每步机器人接触力及floor保留实测交叉核对，不能把配置日志当独立读取。
+
+逐步0..120保存tool13维状态及全部robot关节位置/速度；逐步contact保存body/link、posA/B、distance、normalForce、normal方向、两lateral force及方向。OFF含初始时刻的机器人接触法向力须≤1e-8，后续floor正法向力必须存在。mode内baseline重放tool/robot状态最大差<1e-10且图像精确一致。物理差异、弱效应和零效应均保留，不按能否分类或可见性删格。
+
+ON中已接触/轻微穿透的初态在OFF移除碰撞后是合法定义的碰撞移除反事实，不保证符合可实现材料边界。初期释放瞬态全部记录并预先单列1..30施力段、31..120停力段，不能事后丢掉“难解释”的头几步。质量与外力可继续因F/m相似而不可辨；摩擦和惯量变化也参与机制。
+
+机器人后续姿态可能因ON受力而改变，即使输入控制相同也不保证机器人轨迹相同。JEPA整图差异不能全归物体；必须同时报告robot关节差、tool轨迹差和接触时序。每步法向力可作为离散求解器接触力诊断，其累积与方向分析不是额外独立传感真值。
+
+生成脚本scripts/generate_causalworld_contact_paired_20261013.py；默认seed18，审计必须显式--scenes2 --seed20261017，生产--scenes40 --seed20261018。生产需先通过小审计，不在此协议承诺结果。没有额外摩擦网格，没有新复杂模型；G-5h状态机制诊断与下游视觉诊断另按冻结协议评价。

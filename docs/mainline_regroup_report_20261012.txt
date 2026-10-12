@@ -1,0 +1,118 @@
+路线B B-3：无标签多滞后相关跨块重组最简实验
+日期：2026-10-12；执行与数值核验完成。所属R2-3；科学结论仍是探索，未支持稳定紧凑差异恢复。
+
+固定简单多滞后相关重组没有获得稳定的差异恢复优势。Pong完整训练4维重组直接保留既有差异块，R²保持0.793188；两次训练块重采样降到0.777453/0.756376。Pinball完整训练4维三个差异R²为0.243777/0.306196/0.189203，原4维分组为0.398611/0.306196/0.182485，第一差异明显受损。8维有局部正信号，但同时牺牲其他差异、分组稳定性弱，不足以推进独立确认或扩大模型。
+
+协议与标签路径
+只用已有FP32编码器的128维白化缓存r0；white、SFA、full_block4三种冻结正交基分别报告。对train表示标准化后，计算lag=1/2/4/8的时滞相关矩阵，以双向相关平方的均值作为坐标亲和度，去除对角。平衡贪心分组：剩余坐标中选总亲和度最高者起组，之后逐次加入对现组平均亲和度最高者。每次将全部128坐标分为互斥等宽组；4维32候选、8维16候选。整个候选分组函数不接触任何因素标签。
+
+对照为原连续分组与3个固定种子随机分组；方法为完整train的seed0及2次64帧train块重采样(seed1/2)，全部保留。随机重组与时序重组各有3次运行，但不合并候选集合或按开发集选最佳seed。4维原分组等同此前最佳完整单块诊断。8维原组是预先固定的相邻两个4维块，不是枚举496种块对后择优。相同宽度的全部方法具有相同候选数量和线性读出维数，计算拟合成本不同；不能把候选数匹配理解为所有模型统计假设相同。
+
+标签仍用于选择诊断组：逐目标以train标准化交叉协方差能量选一个候选组，tune从1e-6/1e-4/1e-2/0.1/1/10/100独立选岭正则，dev仅评分。目标沿用Pong左右paddle与Pinball cyl0/2/3/4的训练标准化单因素、公共均值和固定Helmert差异。不能将这称为无监督选择语义组，也没有宣称统计公共成分就是共同物理原因。分组、方法、滞后、宽度、种子均没有根据本次dev结果修改。
+
+完整训练full_block4主结果
+Pong 4维差异：原0.793188，时序0.793188；选中坐标均为[12,13,14,15]，复现既有差异位于其他块的定位。8维差异：原0.793700，时序0.794123，配对64帧bootstrap增量95%区间[-0.003380,0.003245]。
+Pinball 4维差异0/1/2：原[0.398611,0.306196,0.182485]；时序[0.243777,0.306196,0.189203]。差异0增量-0.154834，条件区间[-0.228723,-0.076065]；差异2增量0.006718，区间[-0.061437,0.100843]。
+Pinball 8维差异0/1/2：原[0.403264,0.293834,0.337970]；时序[0.422569,0.361014,0.191486]。增量依次[0.019306,0.067180,-0.146483]；区间分别[-0.029187,0.061172]、[-0.017226,0.159520]、[-0.244427,-0.074895]。第二差异在三次时序拟合中均高于该固定8维原分组，保留此局部正信号；未形成全面且稳定的优势。
+
+稳定性与限制
+full_block4的4维分组相对于完整训练的组内坐标对保留率：Pong0.599/0.656，Pinball0.688/0.729；8维下降到Pong0.317/0.259、Pinball0.328/0.359。随机机会水平分别3/127与7/127。这些数值高于随机并不表示语义分组稳定：Pong两次8维重采样没有任何完整组原样保留，Pinball仅1/16完整组保留。原冻结变换未在本次重采样重新拟合，因此这里只测条件于原变换的重组稳定性。
+
+train/tune/dev分别8192/1024/1024帧，源索引20000–28191、28320–29343、29472–30495；间隔128帧。全部源索引连续、split分离，lag配对只在train内部。训练重采样以原始时间对端点的最小次数加权，绝不串接抽样片段制造伪邻接。但缓存没有episode/reset标识，不能证明未跨重置。所有r0区段已被反复使用，400次配对64帧bootstrap仅是固定模型、旧开发序列的条件区间，不是独立轨迹确认，也没有多重比较校正。未检验新轨迹、完整编码器高秩、物理参数或因果动力学。单一亲和度与贪心分区的阴性结果不否定所有无标签分解；暂不以dev调整滞后或搜索更大候选池。
+
+可追溯性与独立核验
+本地CPU执行，无GPU/SSH。保存84份逐样本预测、分组与所选坐标，504条逐目标指标、候选训练分数、全部配对区间、重采样稳定性、输入/变换/schema/source/code SHA256。独立验证进程从源缓存重建目标与索引，重新核对候选数及train选组，并用直接正规方程求解替代主程序特征分解；504个目标预测最大差1.38e-14，R²最大差1.30e-14，全部通过。数值独立复算不等于独立数据确认。
+
+代码：scripts/mainline_regroup_20261012.py
+运行：C:/Users/lenovo/miniconda3/python.exe F:/2610/CVPR27/scripts/mainline_regroup_20261012.py --root F:/2610/CVPR27 --output F:/2610/CVPR27/runs/mainline_regroup_20261012
+复算：在上述命令后加 --verify。
+核心产物：runs/mainline_regroup_20261012/config.json、results.json、selection.json、comparisons.json、stability.json、audits.json、independent_validation.json、manifest.json、COMPLETE.json与84个预测NPZ。主数据约8.8MB；另保存一次压缩备份，合计低于100MB。
+
+后续判断
+B-3计算及审计完成，R2-3仍为部分完成。没有证据支持直接扩容该多滞后贪心分组或把它并入A路线。仍需提出与本次简单亲和度不同、可证伪的无标签机制，再冻结协议进行新片段确认；不能凭当前负结果说差异信息不存在，也不能把监督top-k参考当成无标签分组的成功。
+
+全部结果（R²；无开发集择优）
+pong white k=4 original: paddle_left_y=0.736386; paddle_right_y=0.716872; common_standardized_mean=0.816683; helmert_difference_0=0.081454
+pong white k=4 random_seed0: paddle_left_y=0.612193; paddle_right_y=0.625658; common_standardized_mean=0.691002; helmert_difference_0=0.109553
+pong white k=4 random_seed1: paddle_left_y=0.663685; paddle_right_y=0.641974; common_standardized_mean=0.713258; helmert_difference_0=0.101384
+pong white k=4 random_seed2: paddle_left_y=0.599632; paddle_right_y=0.643695; common_standardized_mean=0.693171; helmert_difference_0=0.139914
+pong white k=4 temporal_seed0: paddle_left_y=0.599564; paddle_right_y=0.597096; common_standardized_mean=0.678609; helmert_difference_0=0.093904
+pong white k=4 temporal_seed1: paddle_left_y=0.608522; paddle_right_y=0.646272; common_standardized_mean=0.700477; helmert_difference_0=0.142018
+pong white k=4 temporal_seed2: paddle_left_y=0.609555; paddle_right_y=0.646081; common_standardized_mean=0.710867; helmert_difference_0=0.109723
+pong white k=8 original: paddle_left_y=0.775166; paddle_right_y=0.768261; common_standardized_mean=0.871415; helmert_difference_0=0.188879
+pong white k=8 random_seed0: paddle_left_y=0.615859; paddle_right_y=0.616337; common_standardized_mean=0.683175; helmert_difference_0=0.136940
+pong white k=8 random_seed1: paddle_left_y=0.662124; paddle_right_y=0.642686; common_standardized_mean=0.713358; helmert_difference_0=0.134168
+pong white k=8 random_seed2: paddle_left_y=0.600147; paddle_right_y=0.646691; common_standardized_mean=0.693795; helmert_difference_0=0.158891
+pong white k=8 temporal_seed0: paddle_left_y=0.586529; paddle_right_y=0.665981; common_standardized_mean=0.704869; helmert_difference_0=0.158313
+pong white k=8 temporal_seed1: paddle_left_y=0.664720; paddle_right_y=0.645313; common_standardized_mean=0.727994; helmert_difference_0=0.106823
+pong white k=8 temporal_seed2: paddle_left_y=0.568277; paddle_right_y=0.617966; common_standardized_mean=0.652225; helmert_difference_0=0.170986
+pong sfa k=4 original: paddle_left_y=0.782597; paddle_right_y=0.791592; common_standardized_mean=0.888132; helmert_difference_0=0.725047
+pong sfa k=4 random_seed0: paddle_left_y=0.807847; paddle_right_y=0.818147; common_standardized_mean=0.920955; helmert_difference_0=0.704478
+pong sfa k=4 random_seed1: paddle_left_y=0.815981; paddle_right_y=0.833862; common_standardized_mean=0.933541; helmert_difference_0=0.708985
+pong sfa k=4 random_seed2: paddle_left_y=0.788284; paddle_right_y=0.801536; common_standardized_mean=0.900522; helmert_difference_0=0.705780
+pong sfa k=4 temporal_seed0: paddle_left_y=0.807635; paddle_right_y=0.833385; common_standardized_mean=0.925208; helmert_difference_0=0.710940
+pong sfa k=4 temporal_seed1: paddle_left_y=0.784753; paddle_right_y=0.794073; common_standardized_mean=0.895160; helmert_difference_0=0.728401
+pong sfa k=4 temporal_seed2: paddle_left_y=0.861544; paddle_right_y=0.849303; common_standardized_mean=0.968357; helmert_difference_0=0.718953
+pong sfa k=8 original: paddle_left_y=0.852950; paddle_right_y=0.845731; common_standardized_mean=0.958300; helmert_difference_0=0.736941
+pong sfa k=8 random_seed0: paddle_left_y=0.807789; paddle_right_y=0.817865; common_standardized_mean=0.920709; helmert_difference_0=0.706459
+pong sfa k=8 random_seed1: paddle_left_y=0.802035; paddle_right_y=0.823639; common_standardized_mean=0.919673; helmert_difference_0=0.712391
+pong sfa k=8 random_seed2: paddle_left_y=0.787933; paddle_right_y=0.801725; common_standardized_mean=0.900411; helmert_difference_0=0.706712
+pong sfa k=8 temporal_seed0: paddle_left_y=0.853903; paddle_right_y=0.843303; common_standardized_mean=0.958597; helmert_difference_0=0.744529
+pong sfa k=8 temporal_seed1: paddle_left_y=0.793734; paddle_right_y=0.818935; common_standardized_mean=0.908060; helmert_difference_0=0.737070
+pong sfa k=8 temporal_seed2: paddle_left_y=0.866105; paddle_right_y=0.849138; common_standardized_mean=0.968397; helmert_difference_0=0.719825
+pong full_block4 k=4 original: paddle_left_y=0.832800; paddle_right_y=0.842757; common_standardized_mean=0.943852; helmert_difference_0=0.793188
+pong full_block4 k=4 random_seed0: paddle_left_y=0.647295; paddle_right_y=0.653088; common_standardized_mean=0.733779; helmert_difference_0=0.756798
+pong full_block4 k=4 random_seed1: paddle_left_y=0.645788; paddle_right_y=0.651293; common_standardized_mean=0.731578; helmert_difference_0=0.760076
+pong full_block4 k=4 random_seed2: paddle_left_y=0.645798; paddle_right_y=0.651225; common_standardized_mean=0.731620; helmert_difference_0=0.756430
+pong full_block4 k=4 temporal_seed0: paddle_left_y=0.832800; paddle_right_y=0.842757; common_standardized_mean=0.943852; helmert_difference_0=0.793188
+pong full_block4 k=4 temporal_seed1: paddle_left_y=0.832800; paddle_right_y=0.842757; common_standardized_mean=0.943852; helmert_difference_0=0.777453
+pong full_block4 k=4 temporal_seed2: paddle_left_y=0.832800; paddle_right_y=0.842757; common_standardized_mean=0.943852; helmert_difference_0=0.756376
+pong full_block4 k=8 original: paddle_left_y=0.842327; paddle_right_y=0.851209; common_standardized_mean=0.954654; helmert_difference_0=0.793700
+pong full_block4 k=8 random_seed0: paddle_left_y=0.647693; paddle_right_y=0.656925; common_standardized_mean=0.732663; helmert_difference_0=0.757232
+pong full_block4 k=8 random_seed1: paddle_left_y=0.646495; paddle_right_y=0.653354; common_standardized_mean=0.732097; helmert_difference_0=0.769115
+pong full_block4 k=8 random_seed2: paddle_left_y=0.646025; paddle_right_y=0.652781; common_standardized_mean=0.732712; helmert_difference_0=0.758018
+pong full_block4 k=8 temporal_seed0: paddle_left_y=0.843740; paddle_right_y=0.863277; common_standardized_mean=0.964384; helmert_difference_0=0.794123
+pong full_block4 k=8 temporal_seed1: paddle_left_y=0.842056; paddle_right_y=0.861024; common_standardized_mean=0.961493; helmert_difference_0=0.801751
+pong full_block4 k=8 temporal_seed2: paddle_left_y=0.835983; paddle_right_y=0.854382; common_standardized_mean=0.947423; helmert_difference_0=0.805566
+pinball white k=4 original: cyl_0_active=0.348006; cyl_2_active=0.507873; cyl_3_active=0.427015; cyl_4_active=0.443510; common_standardized_mean=0.834381; helmert_difference_0=0.132253; helmert_difference_1=0.176294; helmert_difference_2=0.069803
+pinball white k=4 random_seed0: cyl_0_active=0.343582; cyl_2_active=0.500991; cyl_3_active=0.377907; cyl_4_active=0.414495; common_standardized_mean=0.796643; helmert_difference_0=0.136065; helmert_difference_1=0.035315; helmert_difference_2=0.053685
+pinball white k=4 random_seed1: cyl_0_active=0.353520; cyl_2_active=0.499652; cyl_3_active=0.374674; cyl_4_active=0.405190; common_standardized_mean=0.800180; helmert_difference_0=0.093778; helmert_difference_1=0.073975; helmert_difference_2=0.079495
+pinball white k=4 random_seed2: cyl_0_active=0.353880; cyl_2_active=0.503581; cyl_3_active=0.391845; cyl_4_active=0.391996; common_standardized_mean=0.796539; helmert_difference_0=0.132292; helmert_difference_1=0.063127; helmert_difference_2=0.081431
+pinball white k=4 temporal_seed0: cyl_0_active=0.358532; cyl_2_active=0.500682; cyl_3_active=0.407601; cyl_4_active=0.425095; common_standardized_mean=0.825778; helmert_difference_0=0.072734; helmert_difference_1=0.143193; helmert_difference_2=0.097639
+pinball white k=4 temporal_seed1: cyl_0_active=0.358532; cyl_2_active=0.500682; cyl_3_active=0.407601; cyl_4_active=0.425095; common_standardized_mean=0.825778; helmert_difference_0=0.147189; helmert_difference_1=0.117144; helmert_difference_2=0.101633
+pinball white k=4 temporal_seed2: cyl_0_active=0.358532; cyl_2_active=0.500682; cyl_3_active=0.407601; cyl_4_active=0.425095; common_standardized_mean=0.825778; helmert_difference_0=0.148115; helmert_difference_1=0.083302; helmert_difference_2=0.095813
+pinball white k=8 original: cyl_0_active=0.356729; cyl_2_active=0.520056; cyl_3_active=0.499649; cyl_4_active=0.556104; common_standardized_mean=0.914005; helmert_difference_0=0.152460; helmert_difference_1=0.214059; helmert_difference_2=0.151727
+pinball white k=8 random_seed0: cyl_0_active=0.362353; cyl_2_active=0.507426; cyl_3_active=0.392369; cyl_4_active=0.408475; common_standardized_mean=0.795674; helmert_difference_0=0.076232; helmert_difference_1=0.058329; helmert_difference_2=0.110115
+pinball white k=8 random_seed1: cyl_0_active=0.349798; cyl_2_active=0.528775; cyl_3_active=0.385731; cyl_4_active=0.406382; common_standardized_mean=0.805363; helmert_difference_0=0.141026; helmert_difference_1=0.084309; helmert_difference_2=0.100218
+pinball white k=8 random_seed2: cyl_0_active=0.367806; cyl_2_active=0.512805; cyl_3_active=0.386911; cyl_4_active=0.387594; common_standardized_mean=0.802265; helmert_difference_0=0.082611; helmert_difference_1=0.092200; helmert_difference_2=0.106484
+pinball white k=8 temporal_seed0: cyl_0_active=0.362940; cyl_2_active=0.505765; cyl_3_active=0.448379; cyl_4_active=0.486426; common_standardized_mean=0.871701; helmert_difference_0=0.196453; helmert_difference_1=0.227239; helmert_difference_2=0.107596
+pinball white k=8 temporal_seed1: cyl_0_active=0.362940; cyl_2_active=0.505765; cyl_3_active=0.448379; cyl_4_active=0.486426; common_standardized_mean=0.871701; helmert_difference_0=0.098897; helmert_difference_1=0.207001; helmert_difference_2=0.087560
+pinball white k=8 temporal_seed2: cyl_0_active=0.362940; cyl_2_active=0.505765; cyl_3_active=0.448379; cyl_4_active=0.486426; common_standardized_mean=0.871701; helmert_difference_0=0.098135; helmert_difference_1=0.240592; helmert_difference_2=0.100661
+pinball sfa k=4 original: cyl_0_active=0.253583; cyl_2_active=0.392335; cyl_3_active=0.319866; cyl_4_active=0.324214; common_standardized_mean=0.636862; helmert_difference_0=0.197323; helmert_difference_1=0.149242; helmert_difference_2=0.124552
+pinball sfa k=4 random_seed0: cyl_0_active=0.134775; cyl_2_active=0.218661; cyl_3_active=0.215694; cyl_4_active=0.132874; common_standardized_mean=0.348817; helmert_difference_0=0.101656; helmert_difference_1=0.034458; helmert_difference_2=0.170916
+pinball sfa k=4 random_seed1: cyl_0_active=0.145267; cyl_2_active=0.210831; cyl_3_active=0.208208; cyl_4_active=0.141109; common_standardized_mean=0.358329; helmert_difference_0=0.144231; helmert_difference_1=0.033149; helmert_difference_2=0.180334
+pinball sfa k=4 random_seed2: cyl_0_active=0.143255; cyl_2_active=0.233624; cyl_3_active=0.206760; cyl_4_active=0.242906; common_standardized_mean=0.359050; helmert_difference_0=0.144980; helmert_difference_1=0.240317; helmert_difference_2=0.216097
+pinball sfa k=4 temporal_seed0: cyl_0_active=0.260412; cyl_2_active=0.362100; cyl_3_active=0.267966; cyl_4_active=0.172689; common_standardized_mean=0.436904; helmert_difference_0=0.252002; helmert_difference_1=0.088057; helmert_difference_2=0.249278
+pinball sfa k=4 temporal_seed1: cyl_0_active=0.269223; cyl_2_active=0.309887; cyl_3_active=0.229070; cyl_4_active=0.395360; common_standardized_mean=0.385588; helmert_difference_0=0.165542; helmert_difference_1=0.096280; helmert_difference_2=0.180550
+pinball sfa k=4 temporal_seed2: cyl_0_active=0.205685; cyl_2_active=0.325186; cyl_3_active=0.234068; cyl_4_active=0.179161; common_standardized_mean=0.463615; helmert_difference_0=0.332999; helmert_difference_1=0.036402; helmert_difference_2=0.284655
+pinball sfa k=8 original: cyl_0_active=0.243861; cyl_2_active=0.386107; cyl_3_active=0.489187; cyl_4_active=0.432880; common_standardized_mean=0.698316; helmert_difference_0=0.283741; helmert_difference_1=0.250186; helmert_difference_2=0.240324
+pinball sfa k=8 random_seed0: cyl_0_active=0.131402; cyl_2_active=0.216665; cyl_3_active=0.263550; cyl_4_active=0.115673; common_standardized_mean=0.328246; helmert_difference_0=0.197828; helmert_difference_1=0.035211; helmert_difference_2=0.176153
+pinball sfa k=8 random_seed1: cyl_0_active=0.147108; cyl_2_active=0.165127; cyl_3_active=0.137477; cyl_4_active=0.129641; common_standardized_mean=0.352773; helmert_difference_0=0.143869; helmert_difference_1=0.088636; helmert_difference_2=0.178216
+pinball sfa k=8 random_seed2: cyl_0_active=0.188119; cyl_2_active=0.237587; cyl_3_active=0.205983; cyl_4_active=0.243176; common_standardized_mean=0.369941; helmert_difference_0=0.189657; helmert_difference_1=0.240536; helmert_difference_2=0.210309
+pinball sfa k=8 temporal_seed0: cyl_0_active=0.357746; cyl_2_active=0.542282; cyl_3_active=0.458241; cyl_4_active=0.487931; common_standardized_mean=0.792788; helmert_difference_0=0.229870; helmert_difference_1=0.225618; helmert_difference_2=0.134123
+pinball sfa k=8 temporal_seed1: cyl_0_active=0.357746; cyl_2_active=0.542282; cyl_3_active=0.458241; cyl_4_active=0.487931; common_standardized_mean=0.792788; helmert_difference_0=0.250173; helmert_difference_1=0.334504; helmert_difference_2=0.100970
+pinball sfa k=8 temporal_seed2: cyl_0_active=0.357746; cyl_2_active=0.542282; cyl_3_active=0.458241; cyl_4_active=0.487931; common_standardized_mean=0.792788; helmert_difference_0=0.253680; helmert_difference_1=0.097755; helmert_difference_2=0.157208
+pinball full_block4 k=4 original: cyl_0_active=0.347216; cyl_2_active=0.484994; cyl_3_active=0.490289; cyl_4_active=0.580369; common_standardized_mean=0.926156; helmert_difference_0=0.398611; helmert_difference_1=0.306196; helmert_difference_2=0.182485
+pinball full_block4 k=4 random_seed0: cyl_0_active=0.528202; cyl_2_active=0.491982; cyl_3_active=0.479655; cyl_4_active=0.643935; common_standardized_mean=0.913388; helmert_difference_0=0.176281; helmert_difference_1=0.278525; helmert_difference_2=0.196418
+pinball full_block4 k=4 random_seed1: cyl_0_active=0.340252; cyl_2_active=0.476321; cyl_3_active=0.481494; cyl_4_active=0.585122; common_standardized_mean=0.916737; helmert_difference_0=0.199087; helmert_difference_1=0.268759; helmert_difference_2=0.193117
+pinball full_block4 k=4 random_seed2: cyl_0_active=0.338143; cyl_2_active=0.481637; cyl_3_active=0.478044; cyl_4_active=0.578315; common_standardized_mean=0.913217; helmert_difference_0=0.166095; helmert_difference_1=0.275904; helmert_difference_2=0.211249
+pinball full_block4 k=4 temporal_seed0: cyl_0_active=0.347216; cyl_2_active=0.484994; cyl_3_active=0.490289; cyl_4_active=0.580369; common_standardized_mean=0.926156; helmert_difference_0=0.243777; helmert_difference_1=0.306196; helmert_difference_2=0.189203
+pinball full_block4 k=4 temporal_seed1: cyl_0_active=0.347216; cyl_2_active=0.484994; cyl_3_active=0.490289; cyl_4_active=0.580369; common_standardized_mean=0.926156; helmert_difference_0=0.418425; helmert_difference_1=0.306196; helmert_difference_2=0.192298
+pinball full_block4 k=4 temporal_seed2: cyl_0_active=0.347216; cyl_2_active=0.484994; cyl_3_active=0.490289; cyl_4_active=0.580369; common_standardized_mean=0.926156; helmert_difference_0=0.263635; helmert_difference_1=0.306196; helmert_difference_2=0.189203
+pinball full_block4 k=8 original: cyl_0_active=0.399519; cyl_2_active=0.548247; cyl_3_active=0.510310; cyl_4_active=0.589987; common_standardized_mean=0.925833; helmert_difference_0=0.403264; helmert_difference_1=0.293834; helmert_difference_2=0.337970
+pinball full_block4 k=8 random_seed0: cyl_0_active=0.563329; cyl_2_active=0.540371; cyl_3_active=0.492161; cyl_4_active=0.644156; common_standardized_mean=0.913467; helmert_difference_0=0.280398; helmert_difference_1=0.286582; helmert_difference_2=0.139380
+pinball full_block4 k=8 random_seed1: cyl_0_active=0.344877; cyl_2_active=0.473486; cyl_3_active=0.492373; cyl_4_active=0.585987; common_standardized_mean=0.917032; helmert_difference_0=0.138414; helmert_difference_1=0.271315; helmert_difference_2=0.098135
+pinball full_block4 k=8 random_seed2: cyl_0_active=0.328853; cyl_2_active=0.480921; cyl_3_active=0.481173; cyl_4_active=0.580942; common_standardized_mean=0.915079; helmert_difference_0=0.271915; helmert_difference_1=0.284787; helmert_difference_2=0.208549
+pinball full_block4 k=8 temporal_seed0: cyl_0_active=0.387771; cyl_2_active=0.498035; cyl_3_active=0.557988; cyl_4_active=0.632035; common_standardized_mean=0.950198; helmert_difference_0=0.422569; helmert_difference_1=0.361014; helmert_difference_2=0.191486
+pinball full_block4 k=8 temporal_seed1: cyl_0_active=0.349809; cyl_2_active=0.481864; cyl_3_active=0.518390; cyl_4_active=0.590600; common_standardized_mean=0.931990; helmert_difference_0=0.326282; helmert_difference_1=0.426445; helmert_difference_2=0.355577
+pinball full_block4 k=8 temporal_seed2: cyl_0_active=0.387771; cyl_2_active=0.498035; cyl_3_active=0.557988; cyl_4_active=0.632035; common_standardized_mean=0.950198; helmert_difference_0=0.274025; helmert_difference_1=0.365446; helmert_difference_2=0.280972

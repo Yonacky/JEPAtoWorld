@@ -1,0 +1,7 @@
+G-5i独立审计完成，2026-10-13。
+
+从原始mean/grid特征使用math.fsum欧氏距离、整数交叉乘判定F/m相等、七个异比距离排序取中位，独立复算1280行；先同scene两pair等权，再ON-OFF配对scene重采样5000次，8组汇总通过。160组图像/state pair全部重算一致，最大数值差1.7763568394002505e-15。分母严格为零才NA；没有0<den<=1e-14的微小正分母。源manifest、全部6480行完整键、scene24/8/8、episode与九时刻配对均通过。
+
+补充完整一致性审计：OFF的80/80等F/m pair在全部九个采样时刻，图像完全相同，mean和grid特征也逐值完全相同。ON也有4/80 pair图像及两种特征在全部九时刻完全相同，不能声称ON每个pair都分离。结果限于冻结两组比例关系、九个稀疏时刻及当前观测输入；未把力作为输入，不能推广为任何输入条件下的物理参数不可能识别。
+
+主results.json未修改，独立文件在runs/contact_paired_representation_20261013/independent_audit。脚本verify_contact_paired_representation_20261013.py及verify_contact_all9_features_20261013.py可复跑。首次补充审计因重复解压效率低中止，改为一次加载后完成；指标与结果未改变。root负责整合报告与统一备份。

@@ -1,0 +1,12 @@
+G-5d九格交叉生产独立核验报告（2026-10-13）
+PASS_INVARIANTS：40scene按24/8/8整组、360学习分支、40额外baseline重放、3240帧全部逐项核验。未读取producer checks判断成功，直接从dataset/fullstates/records重算。
+初态最大差0.000e+00；重放状态最大差0.000e+00；初帧和重放图像逐值相同；全部惯量相对固定模板误差0.000e+00。
+确认质量/摩擦实际DynamicsInfo、完整13维tool时间序列与9个采样时刻对应、标签和level、无重复episode/frame、同scene无跨split、repeat不进入学习集。外力是施加命令记录，非独立力传感。
+240个轴向低高比较弱效应数0（阈值位置<=1e-4米或末图<5像素）；全部九格无筛选保留。
+240个轴向差异：最大时序位置差的跨配对min/median/max=[0.0033659937907557966, 0.01795578954113601, 0.10429227072504242]米；速度差=[0.06974194306820575, 0.16133483743827165, 0.39113847257424383]；末图差像素=[94.0, 647.5, 1843.0]。
+80个等F/m配对：最大时序位置差的跨配对min/median/max=[0.0, 0.007066937003584435, 0.04111998554917616]米；速度差=[0.0, 0.10367458305068677, 0.29503888986888815]；末图差像素=[0.0, 482.5, 1187.0]。
+等F/m的两个配对(.01,.01)/(.02,.02)及(.02,.01)/(.04,.02)均保留，轨迹差异不能直接当作质量/外力唯一可辨证据。接触、摩擦、惯量和机器人交互可能打破简化F/m动力学。
+接触日志只在8个非零采样时刻记录。所有接触项（包括零法向力）：robot body1涉及347/360branch、39/40scene；floor body2涉及全部。仅normal_force>1e-8：robot涉及287branch、39scene、677条接触；floor涉及360branch、40scene、6886条。robot法向力最大1.13422N，floor最大.74300N；接触条目计数不等于独立碰撞次数。
+body映射证据：CausalWorld configs/world_constants.py第9–11行ROBOT_ID=1/FLOOR_ID=2/STAGE_ID=3；envs/causalworld.py第767行先加载plane，第769行robot，第816行调用_create_stage，第860行创建floor、第875行stage，第778行还对ROBOT_ID调用getBodyInfo。此映射依据匹配初始化源码；生产没有保存实时getBodyInfo，不能冒称运行时再次查询。
+因此该批是机器人接触存在的受控fixture干预，不是纯自由滑块；应由后续无机器人接触对照核对解释。原记录和所有九格均保留，不按接触或可见性删样本。scene之间未重建世界，保持solver/controller独立性限制；fullstates只含tool，不是全世界状态。
+证据：runs/intervention_20261012/crossed_production_20261013/independent_audit下validation.json、contact_summary.json、effect_summary.json、source_hashes.json。

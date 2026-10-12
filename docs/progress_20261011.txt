@@ -1,0 +1,68 @@
+探索进展与下一步计划（2026-10-11）
+
+结论：时序变换可改善低坐标预算的位置读出与受限预测，但尚无JEPA特有优势、因果因素识别或独立动力学块证据。
+
+E03主实验：三段新区段，3672预测配置、960读出配置、240次变换拟合；独立重建指标通过。FP32仅对第一个匹配区段追加1224预测、320读出，亦通过独立核验。配置数不是独立样本数。
+
+位置读出：每个位置因素分别用训练标签选4个坐标，多个位置因素平均R2。主实验BF16三段均值：
+dataset encoder white sfa full_block4 lag_svd_dual
+pong ijepa 0.6400 0.8029 0.8610 0.7780
+pong random 0.8305 0.9162 0.9493 0.8948
+pong dino 0.5608 0.7771 0.8359 0.7735
+pong pixels 0.7031 0.9006 0.9167 0.8620
+pinball ijepa 0.3688 0.5549 0.5454 0.5618
+pinball random 0.6063 0.7143 0.6816 0.7048
+pinball dino 0.4167 0.5340 0.4453 0.5906
+pinball pixels 0.7298 0.6258 0.5832 0.6140
+
+FP32配对：BF16第0段 -> FP32同一段（位置top4）
+pong ijepa white: 0.6149 -> 0.6081
+pong ijepa sfa: 0.8289 -> 0.8219
+pong ijepa full_block4: 0.8612 -> 0.8610
+pong ijepa lag_svd_dual: 0.7605 -> 0.7741
+pong random white: 0.7911 -> 0.7911
+pong random sfa: 0.9084 -> 0.9073
+pong random full_block4: 0.9488 -> 0.9510
+pong random lag_svd_dual: 0.8986 -> 0.8911
+pong dino white: 0.5642 -> 0.5589
+pong dino sfa: 0.7589 -> 0.7342
+pong dino full_block4: 0.8147 -> 0.8267
+pong dino lag_svd_dual: 0.7650 -> 0.7566
+pong pixels white: 0.6720 -> 0.6720
+pong pixels sfa: 0.9012 -> 0.9012
+pong pixels full_block4: 0.9134 -> 0.9134
+pong pixels lag_svd_dual: 0.8559 -> 0.8559
+pinball ijepa white: 0.3620 -> 0.3851
+pinball ijepa sfa: 0.5912 -> 0.5511
+pinball ijepa full_block4: 0.5511 -> 0.4979
+pinball ijepa lag_svd_dual: 0.6026 -> 0.5619
+pinball random white: 0.6186 -> 0.6096
+pinball random sfa: 0.6970 -> 0.5642
+pinball random full_block4: 0.6983 -> 0.7005
+pinball random lag_svd_dual: 0.6935 -> 0.6436
+pinball dino white: 0.4257 -> 0.4361
+pinball dino sfa: 0.5973 -> 0.5867
+pinball dino full_block4: 0.4227 -> 0.5245
+pinball dino lag_svd_dual: 0.6005 -> 0.5917
+pinball pixels white: 0.7319 -> 0.7319
+pinball pixels sfa: 0.6403 -> 0.6403
+pinball pixels full_block4: 0.5851 -> 0.5851
+pinball pixels lag_svd_dual: 0.6338 -> 0.6338
+
+FP32 I-JEPA，horizon1，4维块预测；MSE仅在相同编码器/相同精度的共同白化空间比较：
+pong white: 0.955933
+pong sfa: 0.874907
+pong full_block4: 0.874098
+pong lag_svd_dual: 0.872386
+pinball white: 0.872984
+pinball sfa: 0.800884
+pinball full_block4: 0.795263
+pinball lag_svd_dual: 0.786895
+
+解释限制：位置可读性不等于动力学机制。随机网络和像素基线很强。Schur的上三角块间耦合未消失。SVD采用前后不同基，不是单一因素坐标。Pinball圆柱激活的旧分类错误已更正，旧结果不混用。未读取官方测试集，当前仍为开发阶段。
+
+下一步：先在固定匹配区段检验FP32、截断白化和正则白化，报告子空间/读出/预测稳定性；再用外观与动力学可独立干预的生成机制区分慢位置和动力学块；以相同参数预算比较SFA、对称/非对称块、双基、随机旋转、像素/随机网络；通过后在第二个环境和LIBERO小样本受控分支验证，冻结协议后再访问确认集。
+
+三个独立上下文Astra子智能体已分配精度稳定性、块可识别性和实验判别设计，只进行小型本地实验；结果待汇总，不能计作已完成结论。
+
+代码：设备默认自动检测可见可用CUDA并选空闲显存最多者，否则CPU；支持手动覆盖。16项CPU数学自检和6项设备策略检查通过。此次修改未提交/推送。完整GPU流程未因本次设备改动重跑。

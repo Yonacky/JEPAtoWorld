@@ -1,0 +1,5 @@
+G-5f两场景配对碰撞独立审计（2026-10-13）
+2scene seed20261017，36学习分支+4baseline重放，324帧已独立核验PASS_INVARIANTS。核验从dataset、完整tool/robot序列、实际参数和每step接触日志重新计算，不读取producer checks成功标记；dataset图像仅解压一次，轨迹按scene缓存。
+初始tool最大误差0.0、tool重放0.0、robot重放0.0、实际惯量模板误差0.0；初帧及重放图像逐值相同。OFF所有step机器人法向力为0；ON18/18学习branch有>1e-8机器人力，36/36学习branch有floor正力。
+初始robot接触distance范围[-1.1720669775976984e-05, 3.723380302629912e-05]米；有负distance时应解释为ON接触初态的碰撞移除反事实，释放瞬态未丢弃。配对后robot关节位置最大差跨branch范围0.0339833至0.208323，所以整图变化不能全归物体。
+runtime bodyinfo及joint数量、显式全部robot link碰撞配置、24/8/8生产split规则和物理标签均核对；保存的每branchtool/robot初态可重算，所有其他body初态仅scene_metadata保存，运行时生成器断言不能冒充事后全世界branch重算。40scene生产seed20261018已由根启动，独立核验入口就绪，尚未宣称生产通过。

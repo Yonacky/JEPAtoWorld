@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-11",
+  "phase": "first_batch_completed",
+  "resource": {
+    "host": "H100",
+    "gpu_count": 1,
+    "physical_gpu_index": 0
+  },
+  "scope": "exploration_only",
+  "report": "docs/round2_first_batch_20261011.txt",
+  "completed": [
+    "data_and_protocol_audit",
+    "shared_baselines_and_pullback_ridge",
+    "A0_synthetic_controls",
+    "A1_global_parent_block_nonorthogonal",
+    "B0_common_contrast_information_audit",
+    "B1_minimal_hierarchy",
+    "supervised_budget_matched_crossblock_diagnostic"
+  ],
+  "pending": [
+    "local_orthogonal_nonorthogonal_four_way",
+    "label_free_crossblock_regrouping",
+    "verified_unseen_confirmation",
+    "history_extension",
+    "matched_simulation_intervention"
+  ],
+  "artifacts": [
+    "runs\\round2_a",
+    "runs\\round2_b",
+    "runs\\round2_audit",
+    "runs\\round2_evaluation",
+    "runs\\round2_crossblock",
+    "runs\\round2_execution"
+  ],
+  "git_push": false
+}

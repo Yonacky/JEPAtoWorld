@@ -1,0 +1,79 @@
+G-5e交叉干预响应几何；2026-10-13。
+
+结论：当前raw grid欧氏坐标下，质量与外力存在明显交互，训练得到的全局低秩主效应跨度对新场景响应覆盖有限。不能据此证明本质不可分离、完全无低秩结构或任何新坐标都无效。
+
+固定40scene24/8/8，t0/30/120，grid5120及xyz3。已知干预轴有标签诊断；同scene九格做正交加性分解。比例按dev每scene等权均值；跨度捕获为dev总响应能量加权，二者汇总方法不同。
+
+t0响应精确为零，全部比例与捕获NA。对其他时刻rank1/2/4全部保留，不由dev挑选。xyz的rank4实际最多3，满空间捕获100%是维数恒等，不是泛化发现。
+
+grid step30：dev交互比例均值0.312434；范围[0.251974,0.384909]
+
+  mass rank预算1实际1，dev能量保留0.059663
+
+  mass rank预算2实际2，dev能量保留0.122206
+
+  mass rank预算4实际4，dev能量保留0.233639
+
+  force rank预算1实际1，dev能量保留0.069252
+
+  force rank预算2实际2，dev能量保留0.126500
+
+  force rank预算4实际4，dev能量保留0.212369
+
+  双因素跨度投影重叠 [{'budget': 1, 'normalized_projection_overlap': 0.6780505525388602}, {'budget': 2, 'normalized_projection_overlap': 0.7412279903650596}, {'budget': 4, 'normalized_projection_overlap': 0.55050996131038}]
+
+grid step120：dev交互比例均值0.335531；范围[0.226951,0.421624]
+
+  mass rank预算1实际1，dev能量保留0.036054
+
+  mass rank预算2实际2，dev能量保留0.093083
+
+  mass rank预算4实际4，dev能量保留0.222686
+
+  force rank预算1实际1，dev能量保留0.035056
+
+  force rank预算2实际2，dev能量保留0.189784
+
+  force rank预算4实际4，dev能量保留0.301928
+
+  双因素跨度投影重叠 [{'budget': 1, 'normalized_projection_overlap': 0.5068911064173377}, {'budget': 2, 'normalized_projection_overlap': 0.36440881346852716}, {'budget': 4, 'normalized_projection_overlap': 0.38640736081267535}]
+
+xyz step30：dev交互比例均值0.089107；范围[0.041737,0.147788]
+
+  mass rank预算1实际1，dev能量保留0.761156
+
+  mass rank预算2实际2，dev能量保留0.988681
+
+  mass rank预算4实际3，dev能量保留1.000000
+
+  force rank预算1实际1，dev能量保留0.867574
+
+  force rank预算2实际2，dev能量保留0.988431
+
+  force rank预算4实际3，dev能量保留1.000000
+
+  双因素跨度投影重叠 [{'budget': 1, 'normalized_projection_overlap': 0.9994427596164369}, {'budget': 2, 'normalized_projection_overlap': 0.9990445688425279}, {'budget': 4, 'normalized_projection_overlap': 1.0000000000000009}]
+
+xyz step120：dev交互比例均值0.192981；范围[0.028330,0.416883]
+
+  mass rank预算1实际1，dev能量保留0.408415
+
+  mass rank预算2实际2，dev能量保留0.999008
+
+  mass rank预算4实际3，dev能量保留1.000000
+
+  force rank预算1实际1，dev能量保留0.604520
+
+  force rank预算2实际2，dev能量保留0.999085
+
+  force rank预算4实际3，dev能量保留1.000000
+
+  双因素跨度投影重叠 [{'budget': 1, 'normalized_projection_overlap': 0.9806592123704306}, {'budget': 2, 'normalized_projection_overlap': 0.9999297435700719}, {'budget': 4, 'normalized_projection_overlap': 0.9999999999999996}]
+
+质量/外力跨度重叠和交互是不同概念：一个描述平均主响应的方向关系，一个描述另一参数变化时主效应之外的残差；均不能直接称因素独立或可识别。
+
+核验：能量恒等相对误差1.92e-16，显式9格线性设计最小二乘独立重算交互比例最大差1.11e-16；跨度正交/特征方程/dev投影核对通过。所有时刻统一先减首格避免t0浮点假响应，数学分解不变。
+
+后续应比较条件局部响应、坐标对齐以及轨迹形状与终点控制。当前未训练这些新机制，也没有把低覆盖归因于单一原因。
+
+接触诊断限制：347/360条学习分支出现机器人接触条目，其中287条在采样时刻法向力>1e-8；39/40scene受影响。body映射依据模拟器初始化源码，未另存运行时bodyinfo。交互和跨scene低秩覆盖不足可能来自接触机制与视觉几何共同作用，不能仅归因于JEPA。

@@ -1,0 +1,38 @@
+G-3 LIBERO两额外任务固定静态路线比较：2026-10-12
+已完成任务内拟合与dev评分及独立重算；每任务随机20demo固定12train/4tune/4dev，seed20261012、stride4，FP32 mean1280、单次固定垂直翻转沿用提取入口。两任务分别训练和评价，不是跨task零样本泛化。
+
+固定协议：训练demo等权PCA白化64，训练同demo实际4帧间隔SFA及原4维有向分块；分块150步，3个固定初始化由无标签训练目标选择。每标量train相关选择4/8/全64坐标，ridge用tune demo等权误差固定网格选择；dev不调参。进度三次多项式使用完整demo长度，是有特权元数据的参照。所有模型训练/调参/评分均demo等权。
+标签只有同obs行末端执行器位置xyz和两gripper关节，分两组报告；没有第三个已核对静态因素组，不把action/位移重新命名为静态因素。轨迹窗口与actions的下游检验由G-1处理；未使用或假定simulator states对齐。
+
+pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate_demo
+帧数744；独立重算50预测，最大差2.220e-16。
+方法 / 预算：位置xyz平均R² / gripper两关节平均R²（先每标量demo等权R²再组平均）
+white / 4: 0.859095 / 0.507677
+white / 8: 0.917358 / 0.687176
+white / 64: 0.951933 / 0.785374
+sfa / 4: 0.875375 / 0.741053
+sfa / 8: 0.940338 / 0.753923
+sfa / 64: 0.951933 / 0.785374
+full_block4 / 4: 0.545098 / 0.646386
+full_block4 / 8: 0.808965 / 0.716077
+full_block4 / 64: 0.951933 / 0.785374
+progress_cubic_oracle / 3: 0.834923 / 0.838295
+各标量及每demo误差完整保存在static_routes/results.json。
+
+pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate_demo
+帧数716；独立重算50预测，最大差2.220e-16。
+方法 / 预算：位置xyz平均R² / gripper两关节平均R²（先每标量demo等权R²再组平均）
+white / 4: 0.874584 / 0.524032
+white / 8: 0.934493 / 0.578615
+white / 64: 0.970051 / 0.653845
+sfa / 4: 0.930258 / 0.488866
+sfa / 8: 0.935921 / 0.566039
+sfa / 64: 0.970051 / 0.653845
+full_block4 / 4: 0.687593 / 0.533520
+full_block4 / 8: 0.849267 / 0.600565
+full_block4 / 64: 0.970051 / 0.653845
+progress_cubic_oracle / 3: 0.869120 / 0.798097
+各标量及每demo误差完整保存在static_routes/results.json。
+
+解释界限
+这里只有每任务4个dev demo，未将相关帧当独立重复，也没有统计显著性或普遍跨任务结论。全64各正交坐标系保持同一span；紧凑差异反映读出效率，不是信息凭空增加。PCA64可能丢失原mean1280信息；未评价完整1280不能据此断言encoder缺失因素。全轨迹时长参照带有未来元数据，只用于检验任务进度混杂。新task仍为开发探索，不能把事后观察当预注册独立确认。两任务提取和完整FP32输入由根智能体验证并备份。

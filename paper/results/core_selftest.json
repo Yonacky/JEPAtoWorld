@@ -1,0 +1,113 @@
+{
+  "test_device": "cpu",
+  "all_passed": true,
+  "tests": {
+    "activation_continuous_preserved": {
+      "passed": true,
+      "details": null
+    },
+    "fractional_score_rejected": {
+      "passed": true,
+      "details": null
+    },
+    "cross_segment_pair_rejected": {
+      "passed": true,
+      "details": null
+    },
+    "lag_direction": {
+      "passed": true,
+      "details": null
+    },
+    "ridge_matches_sklearn": {
+      "passed": true,
+      "details": 3.552713678800501e-15
+    },
+    "ridge_rotation_invariance": {
+      "passed": true,
+      "details": 6.661338147750939e-15
+    },
+    "pca_whitening_identity": {
+      "passed": true,
+      "details": null
+    },
+    "optimized_probe_matches_sklearn_4": {
+      "passed": true,
+      "details": 9.769962616701378e-15
+    },
+    "optimized_probe_matches_sklearn_dense": {
+      "passed": true,
+      "details": 1.1102230246251565e-14
+    },
+    "schur_reconstruction": {
+      "passed": true,
+      "details": null
+    },
+    "normal_cycle_schur_is_2d_blocks": {
+      "passed": true,
+      "details": null
+    },
+    "symmetrization_cannot_distinguish_time_reverse": {
+      "passed": true,
+      "details": null
+    },
+    "nonnormal_schur_not_block_diagonal": {
+      "passed": true,
+      "details": null
+    },
+    "joint_optimizer_reduces_offblock_loss": {
+      "passed": true,
+      "details": {
+        "initial_objective": 0.7360688849616401,
+        "final_objective": 5.0426180843869086e-15,
+        "steps": 22,
+        "initializer_index": 0,
+        "initializer_objectives": [
+          0.7360688849616401
+        ],
+        "loss_history": [
+          0.7360688849616401,
+          0.7032214107277092,
+          0.6477147002754959,
+          0.5636098481459058,
+          0.45657632908084406,
+          0.32716184681206434,
+          0.16327911164912995,
+          0.04303548582270674,
+          0.027058548750176006,
+          0.0010903251275589537,
+          0.00036385142793948864,
+          0.0003464193203051319,
+          2.299278654836724e-05,
+          8.6410935042423e-06,
+          7.87998264002571e-06,
+          2.493504150705268e-07,
+          4.310010099304555e-08,
+          2.1063637016759668e-08,
+          8.80260240667716e-12,
+          6.501930189583748e-13,
+          1.5388006600605363e-13,
+          6.255097241241099e-14,
+          5.0426180843869086e-15
+        ]
+      }
+    },
+    "empirical_cross_cov_orientation": {
+      "passed": true,
+      "details": {
+        "forward_error": 0.17370889925414892,
+        "transpose_error": 3.8150057038103364
+      }
+    },
+    "known_cycles_need_blocks": {
+      "passed": true,
+      "details": {
+        "diagonal": 0.5177901148884566,
+        "natural_blocks": 0.0960706424056749,
+        "dense": 0.09611127766650877
+      }
+    }
+  },
+  "core_sha256": "233ffedaf5a88f0c0f7c0f17590c930b34bac1a93b76b56a062e75573fab5675",
+  "test_sha256": "253e95321017ad30ed7107fbe4f89a7efad5a780c3bc23d4f277cafe8ef343ae",
+  "note": "Synthetic fixtures validate implementation, not evidence about JEPA."
+}

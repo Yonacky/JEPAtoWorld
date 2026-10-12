@@ -1,0 +1,71 @@
+T-3：三个新LIBERO任务的12/30静态紧凑性复现
+日期2026-10-12执行；数据包标记20261013。父计划R2-3/R2-4/S-3。状态：三任务计算、独立复算和F盘备份完成。
+
+结论
+“更多数据能改善部分表示读出”在新任务得到有限复现，但“分块紧凑位置收益随数据量普遍改善”没有普遍复现。原block4的top8位置在cookie和ramekin改善，在cabinet退化；30条train时三个任务都明显落后white/SFA中的较优者。完整64维夹爪在三任务均改善，完整位置在两个任务的固定尺度及物理MSE均改善，另一个任务存在尺度取舍。保留white/SFA必要基线及数据量敏感性判断，不将少量旧任务的分块曲线推广成通用规律。
+
+冻结协议与数据
+在打开本批结果前，已登记T-3并固定方法及预算。三任务分别为pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate_demo（cabinet，1739帧）、on_the_cookie_box（cookie，1282帧）、on_the_ramekin（ramekin，1468帧）；完整名称、文件哈希、episode名单保存在各任务config.json。各50demo按固定seed20261013拆30train/10tune/10dev，stride4、FP32 mean1280缓存。每任务首12train严格嵌套于30train，旧方法参数不改，tune/dev均固定。
+
+每任务分别拟合自己的PCA64、SFA、分块和监督读出，不是跨任务零样本迁移。三任务共30个dev demo，按任务分别报告，不能把30条当作同一任务的30个重复，也不能把同组机械臂场景概括成广泛独立环境。任务和方法由本轮冻结流程确定；本报告是预冻结方法在新任务上的复现检验，不声称这些文件在此前元数据审计中从未被访问。
+
+每个规模重拟合demo等权PCA64白化和同demo实际帧差4的SFA。block4沿用原有目标、150步、identity/SFA/固定seed20261012随机正交三个初始化，按train目标选择，不用dev选。top8/full64两预算；position xyz及gripper两个原始关节量各共享坐标与alpha。train诊断选择使用组标准化边际OLS量；tune只在原S-3八个alpha中选组级正则，没有增加网格、重试、种子或看到结果后改方法。
+
+每任务首12train的demo等权目标均值/标准差冻结，12与30使用同一尺度；主指标为标准化组MSE，再按dev demo等权。另报原字段单位的物理MSE及每demo向量RMSE，不混合位置与关节的单位，也不自行解释未经核实的夹爪单位。与T-2不同crop/未来目标的误差不直接排名；各任务的标准化尺度也不同，不做一个掩盖任务差异的总均值。
+
+逐任务结果
+cabinet：top8位置white0.15859→0.16363、SFA0.13359→0.10475、block4 0.23591→0.28069。block物理MSE0.0021884→0.0031016，同样退化。full64位置标准化0.05250→0.05538略退，而物理MSE0.0005182→0.0004668改善，说明轴尺度权重影响结论，不能只报告其中一种。full64夹爪0.33232→0.28532改善；top8夹爪white0.48581→0.41848、SFA0.35468→0.37533、block0.41542→0.41238，方向不一致。
+
+cookie：top8位置white0.04840→0.05051、SFA0.08422→0.06618、block0.25502→0.20908。分块有改善但仍明显落后简单坐标；full64位置0.02555→0.02125，物理MSE0.0001912→0.0001585。full64夹爪0.33186→0.29822，top8夹爪white0.39711→0.37303、SFA0.35401→0.36610、block0.47014→0.36745。保留分块在本任务夹爪的正信号，但30条时仍没有清晰超越简单基线。
+
+ramekin：top8位置white0.15606→0.12171、SFA0.16908→0.14369、block0.31057→0.26891，三者均改善但分块仍较弱。full64位置0.04838→0.03938，物理MSE0.0002921→0.0002345。full64夹爪0.35729→0.34834小幅改善；top8夹爪white0.42986→0.52141、SFA0.36604→0.37348、block0.42798→0.44425均退化。完整信息可读性提高不保证紧凑坐标选择随样本量同向改善。
+
+三任务的SFA top8位置都随12→30改善，但这不是所有组均改善：SFA top8夹爪三任务均略退。此对比说明因素类型与坐标组织目标仍存在取舍，不能仅通过数据增量宣称通用解释成功。full64三个正交表示预测完全一致，旋转没有新增信息。
+
+不确定性和限制
+只比较一个固定嵌套顺序的12/30两个点，没有独立训练子集重复；不能从两个点拟合幂律、证明饱和或断言继续增加一定有效。新增demo会改变状态覆盖；PCA、时序变换、监督选择和读出全部重拟合，不能单独归因于哪一层估计改善。固定150步预算可能限制较大样本下优化，未事后调整。
+
+保存每任务10条dev的配对差值，并按完整demo做10000次bootstrap，区间仅反映当前task/dev下的条件不确定性，无多重比较校正。不以显著/不显著二分代替三任务一致性。没有把高度相关帧当独立样本。每个时序对同demo且原始差4，split集合互斥、源episode/frame唯一；未涉及动作时间对齐、物理参数或干预，不能称为因果动力学检验。mean1280到PCA64的输入压缩限制继续存在。
+
+核验与交付
+每任务24份组级逐帧预测，总72份；独立直接正规方程替代主程序thin SVD，重新核对train坐标选择、tune alpha及dev源索引/真值。最大预测误差cabinet2.22e-15、cookie2.00e-15、ramekin2.08e-15，标准化指标误差不超过1.00e-15。输入和training_order哈希、完整变换、预测系数、逐demo物理指标、完整跨度不变量全部保存。
+代码scripts/static_newtask_replication_20261012.py；产物runs/static_newtask_replication_20261013/{cabinet,cookie,ramekin}，汇总summary.json、validation_summary.json、replication_curves.png与manifest.json。报告docs/static_newtask_replication_report_20261013.txt。根使用授权单H100提取，分析仅本地CPU。压缩副本在同F盘，不是异地备份。
+T-3执行完成，父R2-3/R2-4仍部分完成。沿用简单基线并保留局部正负证据，不因两旧任务上的正学习曲线恢复分块盲目扩容，也不因新cabinet退化宣称所有分块方法无效。
+
+全部逐组12→30结果与条件区间
+cabinet position white k8: normalized=0.158588->0.163627; physical=0.0016984101->0.0017477785; improved=5/10; delta_CI=[-0.016527659190551686, 0.028160906384171496]
+cabinet position white k64: normalized=0.052505->0.055377; physical=0.00051819658->0.00046675624; improved=5/10; delta_CI=[-0.005699597394462563, 0.013991201671345346]
+cabinet gripper white k8: normalized=0.485805->0.418477; physical=0.00014530573->0.00012516722; improved=8/10; delta_CI=[-0.11764721963694298, -0.006517249992542306]
+cabinet gripper white k64: normalized=0.332319->0.285320; physical=9.9398056e-05->8.5340488e-05; improved=7/10; delta_CI=[-0.08639956697846685, -0.013914093320089232]
+cabinet position sfa k8: normalized=0.133585->0.104746; physical=0.0011716707->0.00087763253; improved=9/10; delta_CI=[-0.04084469625233414, -0.016587163427547708]
+cabinet position sfa k64: normalized=0.052505->0.055377; physical=0.00051819658->0.00046675624; improved=5/10; delta_CI=[-0.005707397385292825, 0.013432426467702055]
+cabinet gripper sfa k8: normalized=0.354685->0.375332; physical=0.00010608722->0.00011226265; improved=5/10; delta_CI=[-0.01957815650925097, 0.06243183372289497]
+cabinet gripper sfa k64: normalized=0.332319->0.285320; physical=9.9398056e-05->8.5340488e-05; improved=7/10; delta_CI=[-0.0853663455079071, -0.015012725574153911]
+cabinet position full_block4 k8: normalized=0.235912->0.280687; physical=0.0021884028->0.0031016405; improved=3/10; delta_CI=[-3.6918733390159435e-05, 0.0936757190908602]
+cabinet position full_block4 k64: normalized=0.052505->0.055377; physical=0.00051819658->0.00046675624; improved=5/10; delta_CI=[-0.005558544694980395, 0.013534984018002084]
+cabinet gripper full_block4 k8: normalized=0.415416->0.412382; physical=0.00012425257->0.00012334502; improved=4/10; delta_CI=[-0.05916443600656828, 0.04531365287327162]
+cabinet gripper full_block4 k64: normalized=0.332319->0.285320; physical=9.9398056e-05->8.5340488e-05; improved=7/10; delta_CI=[-0.08447298882372122, -0.015122972452527925]
+cookie position white k8: normalized=0.048397->0.050508; physical=0.00035928418->0.00036915352; improved=4/10; delta_CI=[-0.002129601434235291, 0.006449606401125311]
+cookie position white k64: normalized=0.025552->0.021245; physical=0.00019117143->0.00015848358; improved=10/10; delta_CI=[-0.006222484865218859, -0.0024967597697688935]
+cookie gripper white k8: normalized=0.397114->0.373035; physical=0.00010652309->0.00010006202; improved=6/10; delta_CI=[-0.08505941949645411, 0.023601110651660016]
+cookie gripper white k64: normalized=0.331862->0.298221; physical=8.9020974e-05->7.9981096e-05; improved=6/10; delta_CI=[-0.06306949304397891, -0.003034337229074019]
+cookie position sfa k8: normalized=0.084223->0.066179; physical=0.00063542011->0.00049227109; improved=7/10; delta_CI=[-0.03585926594184837, -0.0015521578079394523]
+cookie position sfa k64: normalized=0.025552->0.021245; physical=0.00019117143->0.00015848358; improved=10/10; delta_CI=[-0.0062249242904795585, -0.0025048759522652486]
+cookie gripper sfa k8: normalized=0.354014->0.366105; physical=9.4971239e-05->9.8202249e-05; improved=6/10; delta_CI=[-0.03909523263569195, 0.07047011842696281]
+cookie gripper sfa k64: normalized=0.331862->0.298221; physical=8.9020974e-05->7.9981096e-05; improved=6/10; delta_CI=[-0.06277174699141612, -0.0033198876198872874]
+cookie position full_block4 k8: normalized=0.255023->0.209079; physical=0.0018387011->0.0015266653; improved=7/10; delta_CI=[-0.12163961052261987, 0.03618871860063185]
+cookie position full_block4 k64: normalized=0.025552->0.021245; physical=0.00019117143->0.00015848358; improved=10/10; delta_CI=[-0.0062136081846303455, -0.0024969221762715928]
+cookie gripper full_block4 k8: normalized=0.470138->0.367448; physical=0.00012615203->9.857262e-05; improved=8/10; delta_CI=[-0.19371090753614478, 0.004661170568495885]
+cookie gripper full_block4 k64: normalized=0.331862->0.298221; physical=8.9020974e-05->7.9981096e-05; improved=6/10; delta_CI=[-0.06337307157353395, -0.003067934539764999]
+ramekin position white k8: normalized=0.156057->0.121711; physical=0.0008746802->0.00063244508; improved=8/10; delta_CI=[-0.05141057742199547, -0.014786732292102051]
+ramekin position white k64: normalized=0.048379->0.039382; physical=0.00029207785->0.00023448479; improved=8/10; delta_CI=[-0.017596304432609972, -0.0005975384130484316]
+ramekin gripper white k8: normalized=0.429863->0.521408; physical=0.00011913713->0.00014451277; improved=2/10; delta_CI=[0.03341757714828076, 0.1477843246801794]
+ramekin gripper white k64: normalized=0.357293->0.348342; physical=9.9025718e-05->9.6550467e-05; improved=5/10; delta_CI=[-0.035431310415757616, 0.016180677082495737]
+ramekin position sfa k8: normalized=0.169082->0.143687; physical=0.00098883922->0.00078646902; improved=8/10; delta_CI=[-0.040404940272493396, -0.010350963819732157]
+ramekin position sfa k64: normalized=0.048379->0.039382; physical=0.00029207785->0.00023448479; improved=8/10; delta_CI=[-0.017421980398216793, -0.00045284137369476393]
+ramekin gripper sfa k8: normalized=0.366040->0.373483; physical=0.00010144766->0.00010351623; improved=5/10; delta_CI=[-0.05239283244949039, 0.0662055436969848]
+ramekin gripper sfa k64: normalized=0.357293->0.348342; physical=9.9025718e-05->9.6550467e-05; improved=5/10; delta_CI=[-0.03517499865066222, 0.016118224958640803]
+ramekin position full_block4 k8: normalized=0.310574->0.268915; physical=0.0017516947->0.0015522228; improved=7/10; delta_CI=[-0.10431172338864379, 0.023067410447155004]
+ramekin position full_block4 k64: normalized=0.048379->0.039382; physical=0.00029207785->0.00023448479; improved=8/10; delta_CI=[-0.017516016334561246, -0.00015874206595337296]
+ramekin gripper full_block4 k8: normalized=0.427983->0.444248; physical=0.00011862185->0.00012312975; improved=5/10; delta_CI=[-0.03830241170529931, 0.07730260660098047]
+ramekin gripper full_block4 k64: normalized=0.357293->0.348342; physical=9.9025718e-05->9.6550467e-05; improved=5/10; delta_CI=[-0.03557736241072011, 0.016499427165484533]

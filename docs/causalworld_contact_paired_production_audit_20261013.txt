@@ -1,0 +1,12 @@
+G-5f 40场景碰撞ON/OFF独立生产核验（2026-10-13）
+PASS_INVARIANTS：40scene seed20261018按24/8/8分组；720唯一学习分支、80排除的baseline重放，共6480帧。独立脚本一次载入dataset图像、按scene缓存轨迹，直接重算dataset/fullstates/robotstates/records/scene_metadata，不依赖producer flags。
+初始tool状态误差0.0；tool重放误差0.0；机器人全关节位置/速度重放误差0.0；实际惯量与模板误差0.0。同scene各branch及ON/OFF初帧逐值相同，重放图像逐值相同。
+OFF所有121记录时刻（含t0）的最大机器人法向力0.0；ON有>1e-8机器人力的学习分支343/360；OFF对应0/360。所有720/720学习分支后续均保留地面正法向力。
+实际DynamicsInfo mass/friction/inertia与标签一致；runtime getBodyInfo与robot关节数量、全部link碰撞配置、每step接触记录及力/方向数值、split/episode/level/frame/time、9时刻物体状态与121步完整序列对应均已核对。全世界各body的初态仅scene_metadata保存；逐branchtool和robot初态事后核验成立，不能把它冒称全部世界状态的逐branch事后重建。
+初始机器人接触distance范围[-1.969576979103823e-05, 0.0009680367236555238]米；负值表示初态存在轻微穿透/接触松弛，OFF属于从同状态释放该碰撞约束的反事实，未丢弃头几步瞬态。
+ON/OFF配对差异的跨360配对min/median/max：
+max_tool_position_difference = [9.228934610590155e-09, 0.048493534296319446, 0.21623177880486616]
+max_robot_joint_position_difference = [1.2669699757938968e-05, 0.06599204512036581, 0.2198581298811644]
+final_image_changed_pixels = [0.0, 868.5, 1864.0]
+机器人后续关节姿态发生变化，即使初始控制设置相同；JEPA整图变化不能全部归于tool轨迹。此批只能检验移除机器人接触对当前fixture的影响，不预设质量可辨改善。力为Bullet求解器报告，filter启用是显式调用配置、OFF效果由全步接触力实际结果交叉核对；不是额外独立力传感。
+独立证据位于本生产目录independent_audit/validation.json、source_hashes.json、paired_difference_summary.json、manifest.json。旧两场景审计和旧ON九格数据保留不覆盖。

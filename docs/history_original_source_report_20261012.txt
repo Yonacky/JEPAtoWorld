@@ -1,0 +1,8 @@
+H-4 原始历史数据来源审计，2026-10-12
+直接核对服务器原始train.npz并流式计算SHA256，Pong及Pinball与既有特征来源清单完全匹配。Pong为250000帧，字段latents/targets/keys/images；Pinball为150000帧，字段latents/targets/keys/keys_targets/images。两个原始NPZ都没有episode_id、reset或done字段，不再只是缓存字段缺失的推断。
+
+已备份两个数据包自带settings.json。Pong记录intv_prob=.15；Pinball记录ball干预率.1，以及瞬时/时间因果图。两个settings均未给出生成seed或commit，也没有逐时刻自然重采样标记。targets长度比图像短1符合转移标签，但不足以证明窗口不跨球重采样或获得episode边界。
+
+因此H-1/H-3的连续索引窗口结论不变。已有生成器快照显示干预和特定状态条件可能触发重采样，但快照仍未绑定实际生成版本；不能凭位置跳跃或干预标签重建真实reset。下一轮独立序列应由可追溯生成器显式写出重采样原因、episode、seed和版本，再验证窗口筛选敏感性。
+
+本轮只做来源审计，未修改特征、样本或实验指标。归档SHA256: 28062abe9215858386c35d4e4b5905a7729f82240e32f5e0fd47a60df6f13e2c。

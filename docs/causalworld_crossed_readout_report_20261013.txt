@@ -1,0 +1,46 @@
+G5d-eval 质量×外力交叉条件冻结读出；2026-10-13。
+结论：未见干扰中间水平上的质量视觉读出有限，外力视觉读出接近chance；真实位置速度差分对外力有部分可读性。16个模型没有建立质量/外力唯一识别或稳定解耦。所有目标、输入、秩与超参在本批结果前冻结，未扩搜索。
+数据：40scene，24train/8tune/8dev；mass(.01,.02,.04kg)×force(.01,.02,.03N)，摩擦固定.175，9分支×9帧。每scene初图相同、split按scene互斥；grid输入5120或差分拼接10240，真实状态只x/y/z/vx/vy/vz（6或12维），不含参数或接触日志。PCA仅合资格train中心化拟合，视觉rank32，状态rank6/12，不白化；ridge onehot五alpha仅合资格tune MSE挑选。
+质量held制度仅force低高训练/调参，外力held制度仅mass低高；中间干扰水平完全不进PCA、读出拟合或正则选择。目标的三类在训练均出现，中值又在低高数值范围内，所以是跨未见干扰水平的插值诊断，不是目标类别零样本或范围外外推。
+普通制度全9组合有216train/72tune；held仅6组合有144train/48tune，不能把二者差全部当成条件泛化损失。两个目标重复利用同批轨迹，不当独立证据。dev全9、低高、中值全部报告，各scene组内平衡；8scene区间仅条件不确定性，无多重比较确认。
+物理机制限制（根独立接触审计）：360条学习branch中347条含robot body1接触记录（包括零法向力条目）；以normal_force>1e-8判定正法向力接触时为287/360条branch、39/40个scene。两种覆盖口径不同，不能把347条全部解释为正法向力接触。floor body2记录全覆盖，最大robot法向力1.134N。因此本批是fixture受接触动力学，不能解释成自由滑块F/m，不能把读出困难全部归咎JEPA表示纠缠。后续无robotcontact对照另列，本批不扩。
+前30步施加world+x质心外力，之后停力至120步。t120及concat(delta30,delta120)均用于已观测响应分类，不是未来预测。无动作规划或真实物理参数唯一性证明。
+下面balanced accuracy；chance=1/3。每行：source/version/target/regime：all9 / nuisance低高 / nuisance中值 [中值scene95%区间]；rank、alpha。
+grid/t120/mass/ordinary_all9: 0.416667 / 0.416667 / 0.416667 [0.3333333333333333, 0.5416666666666666]; rank=32, alpha=0.1
+grid/t120/mass/held_nuisance_middle: 0.416667 / 0.416667 / 0.416667 [0.3333333333333333, 0.5416666666666666]; rank=32, alpha=0.1
+grid/t120/force/ordinary_all9: 0.333333 / 0.354167 / 0.291667 [0.20833333333333331, 0.3333333333333333]; rank=32, alpha=1.0
+grid/t120/force/held_nuisance_middle: 0.388889 / 0.416667 / 0.333333 [0.3333333333333333, 0.3333333333333333]; rank=32, alpha=1.0
+grid/delta30_delta120/mass/ordinary_all9: 0.430556 / 0.416667 / 0.458333 [0.375, 0.5833333333333333]; rank=32, alpha=0.1
+grid/delta30_delta120/mass/held_nuisance_middle: 0.416667 / 0.395833 / 0.458333 [0.375, 0.5833333333333333]; rank=32, alpha=0.1
+grid/delta30_delta120/force/ordinary_all9: 0.361111 / 0.375000 / 0.333333 [0.20833333333333331, 0.4583333333333333]; rank=32, alpha=0.001
+grid/delta30_delta120/force/held_nuisance_middle: 0.375000 / 0.416667 / 0.291667 [0.16666666666666666, 0.41666666666666663]; rank=32, alpha=1e-05
+state_posvel/t120/mass/ordinary_all9: 0.347222 / 0.333333 / 0.375000 [0.25, 0.5]; rank=6, alpha=0.001
+state_posvel/t120/mass/held_nuisance_middle: 0.375000 / 0.354167 / 0.416667 [0.3333333333333333, 0.5416666666666666]; rank=6, alpha=0.001
+state_posvel/t120/force/ordinary_all9: 0.347222 / 0.354167 / 0.333333 [0.3333333333333333, 0.3333333333333333]; rank=6, alpha=0.001
+state_posvel/t120/force/held_nuisance_middle: 0.375000 / 0.395833 / 0.333333 [0.3333333333333333, 0.3333333333333333]; rank=6, alpha=0.001
+state_posvel/delta30_delta120/mass/ordinary_all9: 0.430556 / 0.375000 / 0.541667 [0.375, 0.7083333333333333]; rank=12, alpha=1e-05
+state_posvel/delta30_delta120/mass/held_nuisance_middle: 0.375000 / 0.333333 / 0.458333 [0.20833333333333331, 0.7083333333333333]; rank=12, alpha=1e-05
+state_posvel/delta30_delta120/force/ordinary_all9: 0.402778 / 0.416667 / 0.375000 [0.3333333333333333, 0.4583333333333333]; rank=12, alpha=0.001
+state_posvel/delta30_delta120/force/held_nuisance_middle: 0.430556 / 0.395833 / 0.500000 [0.375, 0.625]; rank=12, alpha=1e-05
+
+关键条件判断：grid held中值质量t120/差分为0.4167/0.4583；外力为0.3333/0.2917。state_posvel差分held中值质量0.4583、外力0.5000，质量区间较宽[0.2083,0.7083]，外力[0.3750,0.6250]。这些都是8个scene每个3样本的24次分类；不按单个区间挑模型或宣称普遍可识别。
+普通与held对中值表现有升有降、且样本量不同；中值与低高的任务难度也不同，不能把中值偶然更高解释成“泛化超过训练”。配对scene差值全保存：
+{'source': 'grid', 'version': 't120', 'target': 'mass', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': -6.938893903907228e-18, 'paired_scene_ci95': [-0.14583333333333334, 0.16666666666666666]}
+{'source': 'grid', 'version': 't120', 'target': 'mass', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': 0.0, 'paired_scene_ci95': [0.0, 0.0]}
+{'source': 'grid', 'version': 't120', 'target': 'force', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': -0.08333333333333334, 'paired_scene_ci95': [-0.16666666666666669, -0.020833333333333336]}
+{'source': 'grid', 'version': 't120', 'target': 'force', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': 0.041666666666666664, 'paired_scene_ci95': [0.0, 0.125]}
+{'source': 'grid', 'version': 'delta30_delta120', 'target': 'mass', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': 0.06249999999999998, 'paired_scene_ci95': [-0.02083333333333337, 0.16666666666666663]}
+{'source': 'grid', 'version': 'delta30_delta120', 'target': 'mass', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': 0.0, 'paired_scene_ci95': [-0.125, 0.125]}
+{'source': 'grid', 'version': 'delta30_delta120', 'target': 'force', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': -0.125, 'paired_scene_ci95': [-0.25, -0.020833333333333336]}
+{'source': 'grid', 'version': 'delta30_delta120', 'target': 'force', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': -0.041666666666666664, 'paired_scene_ci95': [-0.25, 0.16666666666666666]}
+{'source': 'state_posvel', 'version': 't120', 'target': 'mass', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': 0.06249999999999999, 'paired_scene_ci95': [-0.04166666666666667, 0.1875]}
+{'source': 'state_posvel', 'version': 't120', 'target': 'mass', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': 0.041666666666666664, 'paired_scene_ci95': [0.0, 0.125]}
+{'source': 'state_posvel', 'version': 't120', 'target': 'force', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': -0.0625, 'paired_scene_ci95': [-0.14583333333333334, 0.0]}
+{'source': 'state_posvel', 'version': 't120', 'target': 'force', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': 0.0, 'paired_scene_ci95': [0.0, 0.0]}
+{'source': 'state_posvel', 'version': 'delta30_delta120', 'target': 'mass', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': 0.125, 'paired_scene_ci95': [-0.16666666666666669, 0.39583333333333337]}
+{'source': 'state_posvel', 'version': 'delta30_delta120', 'target': 'mass', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': -0.08333333333333331, 'paired_scene_ci95': [-0.29166666666666663, 0.08333333333333334]}
+{'source': 'state_posvel', 'version': 'delta30_delta120', 'target': 'force', 'contrast': 'held_middle_minus_held_lowhigh', 'difference': 0.10416666666666663, 'paired_scene_ci95': [0.02083333333333331, 0.16666666666666663]}
+{'source': 'state_posvel', 'version': 'delta30_delta120', 'target': 'force', 'contrast': 'held_middle_minus_ordinary_middle', 'difference': 0.125, 'paired_scene_ci95': [0.041666666666666664, 0.25]}
+
+独立核验：每模型独立薄SVD重算岭，重新在合资格tune挑alpha，类别与混淆矩阵完全一致；最大score差=2.9976021664879227e-15；PCA特征方程最大相对误差=3.3091595178525747e-15。源行、scene和标签映射一致；t0图像精确相同、特征容差审计通过。
+输出：runs/causalworld_crossed_readout_20261013。每模型预测分数、类别、truth、nuisance、scene、train/tune/dev源行、PCA、权重、所有tune损失和alpha均保存；config含源哈希与冻结规则。

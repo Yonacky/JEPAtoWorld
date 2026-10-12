@@ -16,6 +16,7 @@ def main():
     p.add_argument("--run-dir", type=Path, required=True)
     p.add_argument("--data-root", type=Path)
     p.add_argument("--assets-root", type=Path)
+    p.add_argument("--device", default="auto", help="auto, cpu, cuda, or cuda:N")
     a = p.parse_args()
     run = a.run_dir.resolve()
     if a.stage == "init":
@@ -28,6 +29,7 @@ def main():
     if not (run / "protocol.json").is_file():
         p.error("run directory is not initialized")
     env = os.environ.copy()
+    env["JEPA_DEVICE"] = a.device
     if a.stage == "prepare":
         if a.data_root is None or not a.data_root.is_dir():
             p.error("prepare requires an existing --data-root")
@@ -46,7 +48,7 @@ def main():
             else:
                 target.symlink_to(source, target_is_directory=True)
         for model in ("ijepa", "random", "dino"):
-            subprocess.run([sys.executable, "-u", str(run / "features.py"), "--model", model, "--gpu", "0"], cwd=run, env=env, check=True)
+            subprocess.run([sys.executable, "-u", str(run / "features.py"), "--model", model, "--device", a.device], cwd=run, env=env, check=True)
     else:
         if a.stage == "validate" and not (run / "COMPLETE.json").is_file():
             p.error("fit has not completed; refusing to wait on an absent result")

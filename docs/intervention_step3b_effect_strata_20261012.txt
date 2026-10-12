@@ -1,0 +1,11 @@
+Step3B 目标变化幅度分层（训练数据分位点；描述性；按有样本场景等权）
+joint0跨场景、conflicting donors：
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 0, "stratum": 0, "eligible_scenes": 31, "edit_count": 4528, "mean_scene_relative_error": 0.7886431339424197, "mean_scene_absolute_error": 7.775561706545625}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 0, "stratum": 1, "eligible_scenes": 32, "edit_count": 4656, "mean_scene_relative_error": 0.6543902560572612, "mean_scene_absolute_error": 8.221911981915394}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 0, "stratum": 2, "eligible_scenes": 32, "edit_count": 4640, "mean_scene_relative_error": 0.3497747480302886, "mean_scene_absolute_error": 8.327095363030452}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 1, "stratum": 0, "eligible_scenes": 32, "edit_count": 4240, "mean_scene_relative_error": 2.7664980002275126, "mean_scene_absolute_error": 8.774182153133527}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 1, "stratum": 1, "eligible_scenes": 32, "edit_count": 4480, "mean_scene_relative_error": 2.0615401713698414, "mean_scene_absolute_error": 9.198905695043155}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 1, "stratum": 2, "eligible_scenes": 32, "edit_count": 5104, "mean_scene_relative_error": 1.6499041468703555, "mean_scene_absolute_error": 9.809062823273777}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 2, "stratum": 0, "eligible_scenes": 32, "edit_count": 5024, "mean_scene_relative_error": 0.5762259741768248, "mean_scene_absolute_error": 9.13914072120183}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 2, "stratum": 1, "eligible_scenes": 32, "edit_count": 4176, "mean_scene_relative_error": 0.3237838761494959, "mean_scene_absolute_error": 8.150275644090772}
+{"method": "joint_0", "scope": "cross", "category": "conflicting", "factor": 2, "stratum": 2, "eligible_scenes": 32, "edit_count": 4624, "mean_scene_relative_error": 0.2199852032613666, "mean_scene_absolute_error": 11.339806894456801}

@@ -1,0 +1,12 @@
+G5d-eval交叉质量×外力冻结评价协议；2026-10-13。
+40个scene按24train/8tune/8dev固定，各scene为mass(.01,.02,.04kg)×force(.01,.02,.03N)九组合、friction=.175。目标三类别在训练中始终出现，因而研究的是未参与拟合调参的另一个参数中间水平上的插值，不是目标零样本或参数范围外外推。
+
+固定16模型：输入grid与真实state_posvel(x,y,z,vx,vy,vz)，各自t120、concat(x30-x0,x120-x0)两个版本；各版本分别读出mass和force；各目标分别普通all9与held nuisance middle两种训练制度。PCA仅合资格train样本中心化拟合，未白化、最大32维，按数值秩记录实际维度；state自然最多6/12维，不能将其与视觉称完全匹配容量。岭onehot三分类五alpha为1e-5/.001/.1/1/10，仅合资格tune按onehot MSE选择，固定最低索引容差1e-10类tie规则。不新增分类器、输入时间或超参。
+
+质量任务held制度：仅force低高的全部mass三类参与train/tune，中force在train/tune不用于PCA、中心、标签、正则选择。外力任务相反，仅mass低高的全部force三类参与train/tune。dev场景始终是8个新scene，在all9、低高干扰、中干扰分别报告混淆矩阵、balanced accuracy和逐scene准确率。普通制度在train/tune使用全9组合，但仍按同样三组dev报告。ordinary有216训练样本和72调参样本，held只有144和48；二者差同时包含训练样本量及条件覆盖差，不把差值全部解释成泛化损失。
+
+输入不含mass/force数值、DynamicsInfo或接触日志。状态只作真实传感信息参照，不能归为视觉识别。每scene初图与初状态相同是数据审计；不为t0增加额外模型。前30步施力，t120含停力后的演化；差分版本属于整段已观测响应分类，不是未来状态预测。两个目标重复使用同一批轨迹，不当独立证据；F/m及接触混淆仍保留。
+
+拟合前逐行核对features/sample_manifest与dataset的split/episode/frame/labels，检查每scene9格×9时刻、分支唯一、真实level数值与状态维度。每个模型独立用薄SVD重算岭系数、重新在同一合资格tune挑alpha，核对预测/混淆矩阵；另核PCA特征方程与保存source索引。5000次整scene bootstrap仅描述8dev的条件不确定性，不作多重比较或物理唯一识别推断。
+
+执行入口：scripts/evaluate_causalworld_crossed_20261013.py --data DATASET_NPZ --features FEATURES_NPZ --output OUTPUT_DIR。等待根提供已审计原始及grid缓存；本地CPU运行，无远程GPU。

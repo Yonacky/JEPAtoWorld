@@ -1,12 +1,14 @@
 import pathlib,sys,json,hashlib,time,types,argparse,shutil
 import numpy as np
 import torch
+from device_utils import activate_device
+from contextlib import nullcontext
 import torch.nn.functional as F
 R=pathlib.Path(__file__).parent;sys.path.insert(0,str(R/'vendor/ijepa-main'))
 from src.models.vision_transformer import vit_huge
 from safetensors.torch import load_file
-p=argparse.ArgumentParser();p.add_argument('--model',required=True,choices=['ijepa','random','dino']);p.add_argument('--gpu',type=int,default=0);args=p.parse_args()
-torch.set_num_threads(8);torch.manual_seed(0);torch.cuda.set_device(args.gpu);device=f'cuda:{args.gpu}'
+p=argparse.ArgumentParser();p.add_argument('--model',required=True,choices=['ijepa','random','dino']);p.add_argument('--device',default=None);p.add_argument('--gpu',type=int,default=None);args=p.parse_args()
+torch.set_num_threads(8);torch.manual_seed(0);device=activate_device(f'cuda:{args.gpu}' if args.gpu is not None else args.device);use_bf16=device.type=='cuda' and torch.cuda.is_bf16_supported()
 def sha(p):
  h=hashlib.sha256()
  with p.open('rb') as f:
@@ -16,7 +18,7 @@ def sdpa(self,x):
  b,n,c=x.shape;q,k,v=self.qkv(x).reshape(b,n,3,self.num_heads,c//self.num_heads).permute(2,0,3,1,4).unbind(0)
  y=F.scaled_dot_product_attention(q,k,v,dropout_p=0.,scale=self.scale)
  return self.proj_drop(self.proj(y.transpose(1,2).reshape(b,n,c))),None
-meta={'model':args.model,'source_sha256':sha(pathlib.Path(__file__)),'protocol_sha256':sha(R/'protocol.json'),'data_manifest_sha256':sha(R/'data_manifest.json'),'torch':torch.__version__,'gpu':torch.cuda.get_device_name(args.gpu),'seed':0,'resize':'torch bilinear antialias=True align_corners=False 224 square','channels':'RGB only','precision':'bfloat16 forward, float32 saved'}
+meta={'model':args.model,'source_sha256':sha(pathlib.Path(__file__)),'protocol_sha256':sha(R/'protocol.json'),'data_manifest_sha256':sha(R/'data_manifest.json'),'torch':torch.__version__,'gpu':torch.cuda.get_device_name(device) if device.type=='cuda' else 'CPU','seed':0,'resize':'torch bilinear antialias=True align_corners=False 224 square','channels':'RGB only','device':str(device),'precision':'bfloat16 forward, float32 saved' if use_bf16 else 'float32 forward and saved'}
 if args.model in ['ijepa','random']:
  if args.model=='ijepa':
   start=time.time()
@@ -71,7 +73,7 @@ for dataset in ['pong','pinball']:
   for i in range(0,N,32):
    x=torch.from_numpy(imgs[i:i+32].copy()).permute(0,3,1,2).to(device=device,dtype=torch.float32)/255
    x=(F.interpolate(x,size=(224,224),mode='bilinear',align_corners=False,antialias=True)-mean)/std
-   with torch.autocast('cuda',dtype=torch.bfloat16):
+   with (torch.autocast('cuda',dtype=torch.bfloat16) if use_bf16 else nullcontext()):
     y=model(x) if args.model!='dino' else model.forward_features(x)[:,1:]
    assert y.shape[1]==256
    y=y.float();means[i:i+len(y)]=y.mean(1).cpu().numpy()
@@ -80,5 +82,5 @@ for dataset in ['pong','pinball']:
  assert np.isfinite(means).all() and np.isfinite(grids).all();assert np.std(means,axis=0).max()>1e-6
  if shutil.disk_usage(R).free<102*2**30:raise RuntimeError('SPACE_RESERVE')
  np.savez(stem.with_suffix('.npz'),mean=means,grid=grids)
- rec={**meta,'dataset':dataset,'n_frames':N,'dim':dim,'seconds':time.time()-start,'cache_sha256':sha(stem.with_suffix('.npz')),'peak_cuda_gib':torch.cuda.max_memory_allocated()/2**30}
+ rec={**meta,'dataset':dataset,'n_frames':N,'dim':dim,'seconds':time.time()-start,'cache_sha256':sha(stem.with_suffix('.npz')),'peak_cuda_gib':torch.cuda.max_memory_allocated(device)/2**30 if device.type=='cuda' else None}
  stem.with_suffix('.json').write_text(json.dumps(rec,indent=2));print('COMPLETE',dataset,args.model,rec['seconds'],flush=True)

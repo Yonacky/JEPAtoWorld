@@ -1,0 +1,8 @@
+Step 2A, fixed before feature extraction: frozen I-JEPA response geometry pilot.
+Use scene split 32 train / 8 tune / 8 test. Variant index is not time. No temporal statistics.
+Representations: mean1280 and grid5120, Euclidean geometry without whitening or label readouts.
+For each factor fit uncentered SVD of all training matched intervention differences. Sign does not affect scatter. Select smallest rank capturing 90% TRAIN response energy (cap64, report unattained). Report ranks1,2,4,8,16,32,64 as descriptive curves; no test-driven rank selection.
+Primary: per-scene heldout projection energy fraction for each intervention type; off-target capture; subspace principal overlap; complement residual. Target energy capture alone is not independence or causal identification.
+Baselines: training observation PCA and seeded random orthogonal subspaces at matched ranks. Response SVD uses intervention identity and is weakly supervised. It is not DSReg.
+Bootstrap units are 8 test scenes, not correlated pairs; intervals exploratory. Include training-vs-heldout capture, not only pooled energy. No claim of unseen factor values or unseen combinations (all27 available per scene).
+This 2A diagnostic complements, not replaces, subsequent DSReg and local/conditional comparisons. Step3 only after audit. Preserve all feature dimensions/residual for editing.

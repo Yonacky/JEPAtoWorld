@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "models": 4,
+  "max_prediction_error": 1.3322676295501878e-15,
+  "checks": [
+    {
+      "model": "on_raw32",
+      "svd_prediction_max_error": 3.469446951953614e-16
+    },
+    {
+      "model": "on_leace32",
+      "svd_prediction_max_error": 2.3592239273284576e-16
+    },
+    {
+      "model": "off_raw32",
+      "svd_prediction_max_error": 1.3322676295501878e-15
+    },
+    {
+      "model": "off_leace32",
+      "svd_prediction_max_error": 4.163336342344337e-16
+    }
+  ],
+  "formula": "Whiten-project-unwhiten vs scalar c(Cinv c)^T/(c^T Cinv c)",
+  "probe": "SVD vs normal equations",
+  "saved_affine_prediction_max_error": 6.938893903907228e-17,
+  "saved_metrics_paired_CI": "PASS"
+}

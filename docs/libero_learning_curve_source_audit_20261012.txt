@@ -1,0 +1,9 @@
+S-1 固定留出数据量扩充独立审计（2026-10-12）
+提取和数据审计完成，尚不能由数据扩充完成推断数据量假设成立；12/24/42学习曲线由S-2/S-3另行评价。
+两任务各50demo；固定seed20261012原排列12:16作为tune、16:20作为dev，其余42用于训练，训练顺序原0:12接20:50；12/24/42严格嵌套。旧dev已使用，本轮是数据量敏感性探索，不是新确认。
+pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate_demo：总1890帧，旧744帧逐值复用，新增1146帧；42/4/4demo。
+pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate_demo：总1794帧，旧716帧逐值复用，新增1078帧；42/4/4demo。
+独立逐值核对旧20demo特征及所有manifest字段不变；重新生成50demo排列与嵌套顺序一致；无重复episode/frame，所有stride4与同demo末端位移逐值一致；末帧位移无效mask保留。checkpoint、FP32精度、resize、normalization和pooling与旧提取一致；特征和manifest保存哈希匹配。
+本地未保存原HDF5，独立审计将新旧记录的HDF5 SHA256比对；实际原HDF5重新哈希由远程提取器完成，不能称本地再次读取了原HDF5。actions仅保存同整数行索引，未核实action与观测因果时序，也未读取simulator states。
+data.json的episodes继承项只描述旧20，已有episodes_note注明；完整50demo身份来自sample_manifest、permutation50和train_order.json，下游不得按继承episodes条目截断训练集。
+证据：runs/libero_learning_curve_source_audit_20261012/validation.json及manifest.json；根提取验证runs/learning_curve_source_validation_20261012.json。

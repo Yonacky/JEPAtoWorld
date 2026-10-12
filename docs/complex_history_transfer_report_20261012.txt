@@ -1,0 +1,101 @@
+路线结论：历史改善部分机器人状态变化读出，但预测导向压缩的未来预测优势没有迁移到这份复杂场景缓存。完整历史位置位移MSE从当前帧0.626降到0.249；同宽PCA64/RRR64为0.397/0.385，二者差值区间跨零。
+未来4/8原始帧表示MSE当前帧0.721/0.849，完整历史0.813/0.871、PCA64为0.811/0.876、RRR64为0.845/0.897，均没有提升。位置状态当前帧0.066最好；夹爪完整历史0.243、RRR0.285仍差于离线三次进度0.195，存在任务进度捷径。保留这些负结果，不按dev修改维数/目标/正则。
+这是单任务5条旧dev示范的路线级外推；新增任务可用同一个参数化脚本和冻结协议评价。独立直接求解重算最大差7.28e-13，落盘逐demo宏平均指标复算差0；共同窗口449/90/85。
+
+G-1 LIBERO真实demo分组的历史路线外推；2026-10-12。
+数据：LIBERO bowl-on-plate；774帧冻结JEPA1280维FP32；完整demo划分[20, 5, 5]；数据身份：Previously inspected dev, exploratory。
+四帧历史间隔4个原始帧；共同裁剪后train/tune/dev=[449, 90, 85]；每个窗口含前三帧、当前及后两采样帧，逐一检查同demo同split和stride4。
+固定每帧train白化PCA64，历史256；比较当前64、全历史256、历史PCA64、预测导向RRR64（lambda固定0.01），无候选微调。RRR拟合目标是未来4/8原始帧的表示拼接128维，仅train；它是任务对齐自监督，不是无监督因素恢复。
+读出位置xyz、两个原始夹爪关节、后向4帧位置位移/夹爪变化、未来表示、历史重构；没有真实速度/动作/质量/摩擦。位移不是速度，不假定采样dt。读出alpha只tune按组选择。
+以下指标为5个dev demo宏平均、按train各维标准差归一的MSE（越低越好）；逐轴R2和逐demo值保存在results.json。进度线性/三次是使用完整demo长度的离线捷径诊断。
+
+current64
+position: 0.066133
+gripper: 0.557217
+backward_displacement: 0.626282
+gripper_change: 0.487235
+future4frames: 0.720946
+future8frames: 0.848636
+history_reconstruction: 0.641939
+
+history256
+position: 0.093470
+gripper: 0.243045
+backward_displacement: 0.249331
+gripper_change: 0.345368
+future4frames: 0.812517
+future8frames: 0.871245
+history_reconstruction: 0.000000
+
+history_pca64
+position: 0.244653
+gripper: 0.406746
+backward_displacement: 0.396866
+gripper_change: 0.443817
+future4frames: 0.810579
+future8frames: 0.875736
+history_reconstruction: 0.463700
+
+history_rrr64
+position: 0.195237
+gripper: 0.284636
+backward_displacement: 0.385527
+gripper_change: 0.592157
+future4frames: 0.844757
+future8frames: 0.896463
+history_reconstruction: 0.701058
+
+progress_linear
+position: 0.575036
+gripper: 0.297522
+backward_displacement: 0.821469
+gripper_change: 0.941826
+future4frames: 1.025483
+future8frames: 0.987967
+history_reconstruction: 1.047426
+
+progress_cubic
+position: 0.370929
+gripper: 0.194975
+backward_displacement: 0.603256
+gripper_change: 0.741349
+future4frames: 1.011696
+future8frames: 0.976107
+history_reconstruction: 1.032101
+
+future_persistence
+future4frames: 0.985551
+future8frames: 1.257648
+
+同demo配对差：参照MSE减方法MSE，正值改善；1000次demo bootstrap，dev示范数量很少，区间不能支持广泛泛化。
+history256 vs current64 position: -0.027337, CI=[-0.05707747295330686, -0.0023119607409224237]
+history256 vs current64 gripper: 0.314173, CI=[0.17406038254618125, 0.4800626886750182]
+history256 vs current64 backward_displacement: 0.376951, CI=[0.30173828279882153, 0.49665578836368035]
+history256 vs current64 gripper_change: 0.141867, CI=[0.0676834615461009, 0.2144473185877031]
+history256 vs current64 future4frames: -0.091571, CI=[-0.1387485235992483, -0.04285846211681197]
+history256 vs current64 future8frames: -0.022609, CI=[-0.03981346686648848, -0.0024880889020499454]
+history256 vs current64 history_reconstruction: 0.641939, CI=[0.5277648217845726, 0.7796392461703109]
+history_pca64 vs current64 position: -0.178520, CI=[-0.23455477183787057, -0.11429613481572129]
+history_pca64 vs current64 gripper: 0.150471, CI=[0.06763446839094049, 0.23330758503486965]
+history_pca64 vs current64 backward_displacement: 0.229416, CI=[0.15939520229583526, 0.3035225148948651]
+history_pca64 vs current64 gripper_change: 0.043418, CI=[-0.02944557200696568, 0.10161006407112043]
+history_pca64 vs current64 future4frames: -0.089633, CI=[-0.12986878328137377, -0.04559466068038538]
+history_pca64 vs current64 future8frames: -0.027100, CI=[-0.04287764174245732, -0.0071102357610604685]
+history_pca64 vs current64 history_reconstruction: 0.178238, CI=[0.13584538477512167, 0.22644236027499193]
+history_rrr64 vs current64 position: -0.129104, CI=[-0.19116153421257523, -0.09402189288989665]
+history_rrr64 vs current64 gripper: 0.272581, CI=[0.17468451358491038, 0.3838003120579658]
+history_rrr64 vs current64 backward_displacement: 0.240755, CI=[0.153859335237063, 0.3294875370022598]
+history_rrr64 vs current64 gripper_change: -0.104922, CI=[-0.23829411953789922, 0.047368875539104696]
+history_rrr64 vs current64 future4frames: -0.123811, CI=[-0.1734306251439999, -0.06658267411632487]
+history_rrr64 vs current64 future8frames: -0.047827, CI=[-0.06454302729704438, -0.028162462045235113]
+history_rrr64 vs current64 history_reconstruction: -0.059120, CI=[-0.08499104440479291, -0.03579560332537587]
+history_rrr64 vs history_pca64 position: 0.049416, CI=[-0.012029815214143242, 0.104203844015387]
+history_rrr64 vs history_pca64 gripper: 0.122110, CI=[-0.04798679149684209, 0.29873787766772875]
+history_rrr64 vs history_pca64 backward_displacement: 0.011339, CI=[-0.07605193074283985, 0.07857402268774152]
+history_rrr64 vs history_pca64 gripper_change: -0.148340, CI=[-0.2766574703199539, -0.024210027566788007]
+history_rrr64 vs history_pca64 future4frames: -0.034178, CI=[-0.057430423088649804, -0.014570872259015344]
+history_rrr64 vs history_pca64 future8frames: -0.020726, CI=[-0.02313014974061913, -0.018396256045873405]
+history_rrr64 vs history_pca64 history_reconstruction: -0.237358, CI=[-0.3054132311365807, -0.17556854110663306]
+
+全部路线独立直接线性求解重算通过，未使用远端GPU或生成新特征。该批是从合成小场景方法到复杂机器人场景的路线级探索，仍非跨任务或真实物理参数验证。
+证据：F:\2610\CVPR27\runs\complex_history_transfer_20261012；配置、源哈希、demo/帧索引、PCA/RRR映射、预测/权重/超参数与独立核验均保存。

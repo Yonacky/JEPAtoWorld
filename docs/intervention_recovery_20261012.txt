@@ -1,0 +1,6 @@
+2026-10-12 U盘恢复同步记录
+组合研究归档及补充审计、匹配干预第一步数据/报告/模拟器源码、第二步A特征/子空间/指标/代码已同步。
+归档SHA256与服务器一致；第二步A解压后逐文件SHA256一致。
+运行快照：runs/intervention_20261012；脚本：其中workspace/scripts；匹配模拟器源码：workspace/CausalWorld-master。
+旧STATUS记录保留在recovery归档；当前STATUS已更新。未复制模型权重及运行环境，依赖和来源见兼容性记录及features/features.json。
+第二步尚余DSReg与联合分块/条件响应比较，第三、四步尚未开始。没有Git推送。

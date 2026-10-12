@@ -1,7 +1,11 @@
 # Local research artifacts; publish core code only.
 /experiments/
 /runs/
-/paper/
+/paper/*
+!/paper/*.md
+!/paper/*.json
+!/paper/results/
+!/paper/figures/
 /tools/legacy/
 /research_registry.json
 /jepa_paper_draft.*

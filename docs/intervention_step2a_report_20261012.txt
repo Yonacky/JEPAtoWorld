@@ -1,0 +1,31 @@
+匹配干预研究 Step 2A：固定响应子空间，2026-10-12
+冻结 I-JEPA；1296 图像，48 基础场景，训练/调参/测试为32/8/8。测试场景新，但因素取值与组合并非新。
+单张 H100 提取特征。因素类别用于构造差分散布矩阵，属于弱监督诊断，不是无监督发现，不是 DSReg。
+不中心化差分 SVD；训练响应能量达到90%的最小秩，最大64。未使用测试数据选秩。调参集本轮仅描述，不选参。
+每个测试场景分别计算投影能量/完整差分能量，然后对8场景等权平均。CI来自场景bootstrap，样本少，仅作探索性描述。
+
+各行捕获率顺序均为：位置、物体绿色、地板色调。
+mean / object_x / response / rank=29: 0.8334, 0.5222, 0.4632
+mean / object_x / observation_pca / rank=29: 0.7502, 0.8824, 0.9663
+mean / object_x / random / rank=29: 0.0199, 0.0184, 0.0215
+mean / object_green / response / rank=14: 0.5090, 0.8876, 0.4147
+mean / object_green / observation_pca / rank=14: 0.5665, 0.7961, 0.9335
+mean / object_green / random / rank=14: 0.0088, 0.0093, 0.0103
+mean / floor_tint / response / rank=4: 0.1813, 0.1912, 0.9183
+mean / floor_tint / observation_pca / rank=4: 0.2579, 0.2285, 0.8489
+mean / floor_tint / random / rank=4: 0.0026, 0.0009, 0.0040
+grid / object_x / response / rank=18: 0.8572, 0.3146, 0.2469
+grid / object_x / observation_pca / rank=18: 0.7628, 0.6224, 0.8759
+grid / object_x / random / rank=18: 0.0038, 0.0037, 0.0036
+grid / object_green / response / rank=46: 0.5109, 0.8615, 0.4488
+grid / object_green / observation_pca / rank=46: 0.8793, 0.7848, 0.9334
+grid / object_green / random / rank=46: 0.0091, 0.0097, 0.0087
+grid / floor_tint / response / rank=10: 0.1653, 0.2155, 0.8866
+grid / floor_tint / observation_pca / rank=10: 0.7147, 0.3562, 0.8168
+grid / floor_tint / random / rank=10: 0.0027, 0.0025, 0.0020
+
+解释：目标响应具有可压缩性和跨场景延续性，但跨因素投影泄漏显著。多个独立拟合的响应子空间允许重叠，不能直接拼成一套正交因素块。
+保留完整特征与补空间。NumPy CPU显式投影独立核验六个主条件，与GPU累计投影统计误差小于1e-10；残差能量分解通过。
+下一步仍属原计划第二步：加入DSReg与对泄漏惩罚的联合正交/分块方法，并比较条件/局部响应；训练选择、场景隔离。只有候选块具备有效选择性后才进入第三步真实干预对照编辑。
+本轮8个测试场景已用于探索，下一轮确认需新增场景，不能重复宣称盲测。
+限制：静态外观/位置，非动力学因素；单相机、单物体类别；无普遍因果可识别性证明。

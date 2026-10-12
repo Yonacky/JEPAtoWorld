@@ -1,0 +1,13 @@
+G-5l有限LEACE比较，2026-10-13，计算前冻结。
+
+复用G5j各mode train24拟合的无标签PCA32及G5k保存分数，固定grid双差分。ON/OFF各前16train scene(0..15)拟合连续log(F/m) LEACE，后8train scene(16..23)拟合probe；tune24..31选五alpha[1e-5,.001,.1,1,10]，dev32..39只报告。无标签PCA使用全部24train，故擦除/probe内部共享无标签统计，明确train内部半转导设计，非dev泄漏。原32维/LEACE32输出各训练同72branch probe，共4模型，先以各probe输入均值中心化，目标沿用历史train尺度，包含截距。
+
+LEACE原公式float64：C为前16scene特征协方差，c为与连续ratio交叉协方差，W=C的逆平方根，u=Wc/||Wc||，E=I-C平方根*u*u转置*W；输出mu+E(x-mu)。不收缩、不trace约束、不调阈值，协方差伪逆阈值maxeig*32*float64eps；零c则恒等并报告，不能强行制造维度损失。
+
+报告fit16/probe8/tune8/dev8原/擦除交叉协方差范数及比例、相对平方特征损伤(除以原特征距fit均值平方范数)、rank/幂等/消协方差恒等、4模型logMSE/R²及每scene误差。配对scene5000bootstrap seed571，旧dev探索、不多重校正。用另一闭式标量公式核验变换，用独立SVD重算读出、从保存预测重算指标。数据/基线/源码hash与映射/预测全保存。只跑一次，不迭代擦除、不搜seed/rank，不以成功为目标。
+
+此为有标签概念擦除诊断，非无监督解释；8scene probe样本少，与G5j24scene probe不可直接比较。LEACE连续目标保证只限平方损失/训练分布线性协方差，不保证非线性信息消失或跨scene唯一物理因素。
+
+原文§4.3 https://arxiv.org/html/2306.03819v4#S4.SS3
+官方实现 https://raw.githubusercontent.com/EleutherAI/concept-erasure/main/concept_erasure/leace.py
+官方默认收缩、trace约束及svd_tol不用于本解析检查。

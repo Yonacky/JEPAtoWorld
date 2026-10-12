@@ -1,0 +1,39 @@
+T-2 三个新增LIBERO任务固定历史路线复现；2026-10-13。
+结论：完整历史改善后向位移读出的趋势在三个新增任务复现；增加训练demo从12到30后完整历史继续改善，并优于两种64维压缩。未来表示预测也随训练量改善，但30条时仍未超过当前帧：不能把历史位移收益推广成未来世界模型优势。
+cabinet/cookie/ramekin各50条完整demo，固定30train/10tune/10dev，三个任务合计30条dev。方法在看新任务结果前冻结，各task分别训练，非同一模型的跨task泛化或零样本迁移。所有窗口同demo/split，stride4；首12训练帧PCA64冻结未来坐标、首12共同窗口冻结状态尺度，12与30可比。输入PCA和历史压缩仅各train拟合，RRR lambda=.01，ridge网格不变，tune/dev demo等权。
+位移是后向4原始帧位置差，目标两端都已包含在历史输入窗口内，属于回顾性读出，不是未来状态预测、真实速度或物理因果；未来是冻结JEPA64维坐标，不是未来状态。结果macro_physical_mse对状态为原单位MSE，对future是latent原尺度，不能统称物理量。
+按任务分列30train MSE：current / history256 / PCA64 / RRR64。
+cabinet backward_displacement : 0.305441 / 0.188189 / 0.238043 / 0.238028
+cabinet future4frames : 0.692363 / 0.710150 / 0.786246 / 0.735627
+cabinet future8frames : 0.831862 / 0.852958 / 0.885657 / 0.838779
+cookie backward_displacement : 0.235256 / 0.079442 / 0.155274 / 0.163057
+cookie future4frames : 0.712412 / 0.754285 / 0.781998 / 0.778950
+cookie future8frames : 0.823984 / 0.855262 / 0.842866 / 0.840949
+ramekin backward_displacement : 0.362194 / 0.146959 / 0.291547 / 0.264315
+ramekin future4frames : 0.728795 / 0.779124 / 0.816861 / 0.806501
+ramekin future8frames : 0.876940 / 0.916430 / 0.911625 / 0.898700
+
+三任务等权、任务内demo重采样的路线差（参照减方法正值改善；条件于已选3任务，不能当广泛任务总体CI）：
+{'method': 'history256', 'reference': 'current64', 'target': 'backward_displacement', 'task_equal_delta': 0.1627670860762752, 'within_task_bootstrap_ci95': [0.13982087052020017, 0.18533506581843542]}
+{'method': 'history256', 'reference': 'current64', 'target': 'future4frames', 'task_equal_delta': -0.03666299255781583, 'within_task_bootstrap_ci95': [-0.04832186654439859, -0.02580302345635557]}
+{'method': 'history256', 'reference': 'current64', 'target': 'future8frames', 'task_equal_delta': -0.03062097070489753, 'within_task_bootstrap_ci95': [-0.04236326974887316, -0.018449380442560188]}
+{'method': 'history_pca64', 'reference': 'current64', 'target': 'backward_displacement', 'task_equal_delta': 0.07267574592713218, 'within_task_bootstrap_ci95': [0.05291571982253511, 0.09401580066872434]}
+{'method': 'history_pca64', 'reference': 'current64', 'target': 'future4frames', 'task_equal_delta': -0.08384520498813819, 'within_task_bootstrap_ci95': [-0.09881319249918304, -0.07035342565106713]}
+{'method': 'history_pca64', 'reference': 'current64', 'target': 'future8frames', 'task_equal_delta': -0.03578727471891988, 'within_task_bootstrap_ci95': [-0.049072902811435885, -0.02387029704138117]}
+{'method': 'history_rrr64', 'reference': 'current64', 'target': 'backward_displacement', 'task_equal_delta': 0.07916366111420976, 'within_task_bootstrap_ci95': [0.056058440096785664, 0.1030351598663544]}
+{'method': 'history_rrr64', 'reference': 'current64', 'target': 'future4frames', 'task_equal_delta': -0.06250265267915601, 'within_task_bootstrap_ci95': [-0.07425324137459154, -0.0525313596765481]}
+{'method': 'history_rrr64', 'reference': 'current64', 'target': 'future8frames', 'task_equal_delta': -0.015213776275574372, 'within_task_bootstrap_ci95': [-0.02313478867485867, -0.006847441101672486]}
+{'method': 'history256', 'reference': 'history_pca64', 'target': 'backward_displacement', 'task_equal_delta': 0.09009134014914306, 'within_task_bootstrap_ci95': [0.07027935763445056, 0.10876672929756864]}
+{'method': 'history256', 'reference': 'history_pca64', 'target': 'future4frames', 'task_equal_delta': 0.04718221243032237, 'within_task_bootstrap_ci95': [0.039986534865038545, 0.05462914517177134]}
+{'method': 'history256', 'reference': 'history_pca64', 'target': 'future8frames', 'task_equal_delta': 0.005166304014022356, 'within_task_bootstrap_ci95': [-0.0034135572759662106, 0.014285628470664252]}
+{'method': 'history256', 'reference': 'history_rrr64', 'target': 'backward_displacement', 'task_equal_delta': 0.08360342496206548, 'within_task_bootstrap_ci95': [0.07087036023970725, 0.09671270544010266]}
+{'method': 'history256', 'reference': 'history_rrr64', 'target': 'future4frames', 'task_equal_delta': 0.025839660121340178, 'within_task_bootstrap_ci95': [0.02095339688357224, 0.030424272689519742]}
+{'method': 'history256', 'reference': 'history_rrr64', 'target': 'future8frames', 'task_equal_delta': -0.01540719442932316, 'within_task_bootstrap_ci95': [-0.021360253157511857, -0.009065620543047041]}
+
+独立直接线性求解与保存预测评分复算：
+{'task': 'cabinet', 'max_direct': 1.3433698597964394e-13, 'saved_metric_error': 2.220446049250313e-16, 'tune_dev_windows': {'tune': 305, 'dev': 308}}
+{'task': 'cookie', 'max_direct': 1.5265566588595902e-13, 'saved_metric_error': 2.220446049250313e-16, 'tune_dev_windows': {'tune': 222, 'dev': 205}}
+{'task': 'ramekin', 'max_direct': 7.456535389138708e-14, 'saved_metric_error': 2.220446049250313e-16, 'tune_dev_windows': {'tune': 240, 'dev': 256}}
+状态变化读出收益有新任务复现支持，但完整历史256与压缩64存在容量差，不证明新子空间方法优越。保留完整历史作为诊断参照；压缩仍丢失运动信息，未来预测未见历史的稳定增益。后续应转向动作/物理干预证据，不按这批dev继续调参。
+各任务报告docs/history_newtask_{cabinet,cookie,ramekin}_20261013.txt；结果runs/history_newtask_*_20261013；图runs/history_newtasks_summary_20261013/newtask_history_curves.png及PDF。
+评估强度：每任务10dev比上一轮4dev更充分，但三个任务仍同属LIBERO spatial拿碗放盘家族，不能代表任意机器人任务分布。分任务结果优先，任务等权汇总仅辅助；完整历史256维与压缩64维的容量差保持，不能把优势归为纯算法改进。

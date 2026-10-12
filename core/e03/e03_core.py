@@ -81,8 +81,10 @@ def schur_basis(a):
   groups.append(np.arange(i,i+size));i+=size
  return q,t,groups
 
-def optimize_joint(c,block,initializers,steps=250,device='cuda:0'):
+def optimize_joint(c,block,initializers,steps=250,device=None):
  import torch
+ from device_utils import select_device
+ device=select_device(device)
  n=c.shape[1];cc=torch.tensor(c,device=device,dtype=torch.float64);mask=torch.tensor(mask_for(groups_fixed(n,block),n),device=device);den=(cc*cc).sum().clamp_min(1e-15)
  def value(q):return ((((q.T@cc@q)*mask)**2).sum()/den)
  candidates=[torch.tensor(a,device=device,dtype=torch.float64) for a in initializers];costs=[float(value(q)) for q in candidates];chosen=int(np.argmin(costs));q=candidates[chosen];initial=costs[chosen];lr=1.;history=[initial]
@@ -92,7 +94,7 @@ def optimize_joint(c,block,initializers,steps=250,device='cuda:0'):
   found=False
   for back in range(15):
    eye=torch.eye(n,device=device,dtype=torch.float64);qn=torch.linalg.solve(eye+lr*a/2,(eye-lr*a/2)@q);v=float(value(qn))
-   if v<float(f)-1e-14:found=True;break
+   if v<float(f.detach())-1e-14:found=True;break
    lr*=.5
   if not found:break
   q=qn;history.append(v);lr=min(1.2*lr,20.)

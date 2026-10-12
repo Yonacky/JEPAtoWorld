@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "models": 6,
+  "checks": [
+    {
+      "model": "on_logratio",
+      "svd_prediction_max_error": 6.661338147750939e-16,
+      "same_selected_alpha": true,
+      "saved_prediction_mse_error": 5.551115123125783e-17
+    },
+    {
+      "model": "on_logmass",
+      "svd_prediction_max_error": 1.3322676295501878e-15,
+      "same_selected_alpha": true,
+      "saved_prediction_mse_error": 0.0
+    },
+    {
+      "model": "on_logforce",
+      "svd_prediction_max_error": 4.440892098500626e-16,
+      "same_selected_alpha": true,
+      "saved_prediction_mse_error": 0.0
+    },
+    {
+      "model": "off_logratio",
+      "svd_prediction_max_error": 1.1102230246251565e-15,
+      "same_selected_alpha": true,
+      "saved_prediction_mse_error": 2.7755575615628914e-17
+    },
+    {
+      "model": "off_logmass",
+      "svd_prediction_max_error": 8.881784197001252e-16,
+      "same_selected_alpha": true,
+      "saved_prediction_mse_error": 2.7755575615628914e-17
+    },
+    {
+      "model": "off_logforce",
+      "svd_prediction_max_error": 8.881784197001252e-16,
+      "same_selected_alpha": true,
+      "saved_prediction_mse_error": 0.0
+    }
+  ],
+  "independence": "alternate SVD ridge solve and saved-prediction metric reduction; same data/PCA by design"
+}

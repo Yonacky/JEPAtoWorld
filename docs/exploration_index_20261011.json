@@ -1,0 +1,277 @@
+{
+  "objective": "Explain JEPA components; no requirement for encoder superiority",
+  "runs": [
+    {
+      "path": "runs/astra_design/real_block_probe",
+      "artifacts": [
+        "run.py",
+        "results.json",
+        "COMPLETE.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_design/real_block_probe/natural_blocks",
+      "artifacts": [
+        "run.py",
+        "results.json",
+        "COMPLETE.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_precision/real_jepa",
+      "artifacts": [
+        "evaluate.py",
+        "results.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_blocks/real_jepa",
+      "artifacts": [
+        "evaluate.py",
+        "results.json",
+        "finite_sample_check.py",
+        "crosscheck.json",
+        "notes.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_blocks/refine_blocks",
+      "artifacts": [
+        "evaluate.py",
+        "pong_identity_seed0_fit.json",
+        "pong_identity_seed1_fit.json",
+        "pong_random_seed0_fit.json",
+        "pong_random_seed1_fit.json",
+        "pong_fastica_seed0_fit.json",
+        "pong_fastica_seed1_fit.json",
+        "pong_jade_seed0_fit.json",
+        "pong_jade_seed1_fit.json",
+        "pong_temporal_jd_seed0_fit.json",
+        "pong_temporal_jd_seed1_fit.json",
+        "pinball_identity_seed0_fit.json",
+        "pinball_identity_seed1_fit.json",
+        "pinball_random_seed0_fit.json",
+        "pinball_random_seed1_fit.json",
+        "pinball_fastica_seed0_fit.json",
+        "pinball_fastica_seed1_fit.json",
+        "pinball_jade_seed0_fit.json",
+        "pinball_jade_seed1_fit.json",
+        "pinball_temporal_jd_seed0_fit.json",
+        "pinball_temporal_jd_seed1_fit.json",
+        "results.json",
+        "geometry.py",
+        "geometry.json",
+        "notes.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_blocks/activation_stability",
+      "artifacts": [
+        "evaluate.py",
+        "results.json"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/e04_event_response",
+      "artifacts": [
+        "evaluate.py",
+        "results.json"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_precision/dsreg_blocks",
+      "artifacts": [
+        "run.py",
+        "pong_results.json",
+        "pinball_results.json",
+        "results.json",
+        "summarize.py",
+        "report.txt",
+        "official_source_hashes.json"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_precision/dsreg_global",
+      "artifacts": [
+        "run_global.py",
+        "pong_results.json",
+        "pinball_results.json",
+        "results.json",
+        "summarize.py",
+        "report.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_design/dsreg_audit",
+      "artifacts": [
+        "tree.json",
+        "source_manifest.json",
+        "audit_facts.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_design/dsreg_function_check",
+      "artifacts": [
+        "run.py",
+        "results.json",
+        "COMPLETE.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; see individual reports for limits"
+    },
+    {
+      "path": "runs/astra_precision/jacobian_audit",
+      "artifacts": [
+        "audit.py",
+        "results.json",
+        "summary.json",
+        "results_fit192_bootstrap_sensitivity.json",
+        "summarize.py",
+        "report.txt"
+      ],
+      "scope": "exploratory; inspect report for metric definitions and limits"
+    },
+    {
+      "path": "runs/astra_precision/dsreg_regularized",
+      "artifacts": [
+        "run_regularized.py",
+        "pong_results.json",
+        "pinball_results.json",
+        "results.json",
+        "summarize.py",
+        "report.txt"
+      ],
+      "scope": "exploratory; inspect report for metric definitions and limits"
+    },
+    {
+      "path": "runs/astra_design/orthogonal_oracle",
+      "artifacts": [
+        "run.py",
+        "results.json",
+        "geometry.json",
+        "parent_block_status.json",
+        "summary.json",
+        "COMPLETE.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; inspect report for metric definitions and limits"
+    },
+    {
+      "path": "runs/astra_design/history_sufficiency",
+      "artifacts": [
+        "run.py",
+        "results.json",
+        "protocol_and_checks.json",
+        "summary.json",
+        "COMPLETE.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; inspect report for metric definitions and limits"
+    },
+    {
+      "path": "runs/astra_blocks/disentanglement_metrics",
+      "artifacts": [
+        "evaluate.py",
+        "results.json",
+        "notes.txt"
+      ],
+      "scope": "exploratory; inspect report for metric definitions and limits"
+    },
+    {
+      "path": "runs/astra_design/dci_metrics",
+      "artifacts": [
+        "run.py",
+        "progress.json",
+        "author_utils.py.txt",
+        "author_regression.py.txt",
+        "finalize.py",
+        "sources.json",
+        "factor_metrics.json",
+        "summary.json",
+        "COMPLETE.json",
+        "author_formula_crosscheck.json",
+        "report.txt"
+      ],
+      "scope": "exploratory; inspect report for metric definitions and limits"
+    },
+    {
+      "path": "runs/spatial_holdout_20261011",
+      "artifacts": [
+        "evaluation/results.json",
+        "evaluation/COMPLETE.json",
+        "evaluation/predictions.npz",
+        "features/features.json"
+      ],
+      "report": "docs/spatial_holdout_report_20261011.txt",
+      "validation": "runs/spatial_audit/result_validation.json",
+      "scope": "Frozen new-sequence primary mean-vs-grid comparison; fixed train/tune; two prespecified endpoints; secondary methods descriptive only"
+    },
+    {
+      "path": "runs/haar_holdout_20261011",
+      "artifacts": [
+        "evaluation/results.json",
+        "evaluation/COMPLETE.json",
+        "capacity/results.json",
+        "capacity/COMPLETE.json"
+      ],
+      "report": "docs/haar_holdout_report_20261011.txt",
+      "validation": "runs/haar_audit/result_validation.json",
+      "scope": "New-sequence fixed64+64 primary confirmation failed; auxiliary allocation and post-hoc matched256 capacity diagnostic explicitly exploratory"
+    }
+  ],
+  "official_training_reproduction": {
+    "status": "completed_and_independently_validated",
+    "remote_run": "dsreg_official_20261011",
+    "dimensions": [
+      4,
+      8
+    ],
+    "seed": 0,
+    "official_commit": "b7cecd114f74d5f173fdf3e37ef411be65a887d0",
+    "all_protocol_hyperparameters": "official defaults; runtime environment differs",
+    "local_path": "experiments/dsreg_official_20261011",
+    "metrics": [
+      {
+        "dimension": 4,
+        "seed": 0,
+        "official_defaults_match": true,
+        "dense_r2_invariance_error": 0.0,
+        "mcc_before": 0.7581523656845093,
+        "mcc_after": 0.9968116283416748,
+        "dense_r2": 0.9946773648262024,
+        "paper_mcc_mean": 0.9969688802957535,
+        "paper_mcc_std": 0.00018116992426086168,
+        "paper_seed_count": 20,
+        "result_sha256": "f17a3605f1b722c8ae65b51fbd4860fe9742577951c981d73ed5b42393f6abed"
+      },
+      {
+        "dimension": 8,
+        "seed": 0,
+        "official_defaults_match": true,
+        "dense_r2_invariance_error": 0.0,
+        "mcc_before": 0.6676408052444458,
+        "mcc_after": 0.9939212799072266,
+        "dense_r2": 0.9889298677444458,
+        "paper_mcc_mean": 0.9938434541225434,
+        "paper_mcc_std": 0.00104026183770854,
+        "paper_seed_count": 20,
+        "result_sha256": "a9c10bffad42ba8c63fb609123e434e81cfbf265a090bb589a1a84e67580bb15"
+      }
+    ]
+  },
+  "summary_report": "runs/e04_summary/research_report.txt"
+}

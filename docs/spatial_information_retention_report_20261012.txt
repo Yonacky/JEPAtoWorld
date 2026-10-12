@@ -1,0 +1,63 @@
+G-4a：固定空间分区压缩与位置/颜色信息保留
+2026-10-12；所属R2-3/G-4。计算、独立复算和压缩结构核验完成。现有CausalWorld数据的探索，不是新确认。
+
+结论
+本轮固定64维空间分配没有实现物体位置与颜色同时改善。四格各PCA16拼64相对全局gridPCA64在四个诊断组均退化；mean32加空间差异32只有物体绿色小幅改善，位置及背景均损失。当前应保留这两个简单压缩方案的负结果，不据此展开大量配比或维数搜索。原始特征读出仍明显更好，说明这些固定低秩分配规则没有充分保住所需信息；但有限线性readout不是信息论上界，不能据此宣称完整编码器已被完全解释。
+
+数据、固定方法与公平边界
+复用runs/spatial_holdout_20261011/features的FP32 mean1280与grid5120。真实10train/3tune/20dev sequence，每序列64帧，总2112帧；episode集合互斥、episode/frame键唯一。全部20条dev曾被使用，只作探索。未生成新数据、未读新测试、未使用远程GPU。
+grid来自16×16 token图的2×2平均池化，内存布局[N,1280,4]，四格为row-major。先核对四格均值与保存的mean一致，误差在2e-5内。固定四种无标签压缩：全局gridPCA64；每格单独PCA16并拼64；均值分支PCA32加四格正交Helmert零和差异分支PCA32；meanPCA64。所有PCA只用train，sequence等权。没有依据物体标签指定格子、没有按dev选择保留比例。32+32分支的零和空间对比仅描述空间差异，不表示公共/私有语义因素已被发现。
+
+每种压缩的64个输出统一在train上再次全协方差白化，以控制冗余、尺度和线性岭正则几何。此白化只改变已选跨度内的坐标，不增加方向；已数值核验各64维跨度保持、有效秩和训练协方差。四格局部原方向在合并白化后不再逐轴只作用于一个格子，因此不能把最终轴解释为局部格子因素；局部性只用于选择跨度。
+
+三个空间方案都读取同一个grid5120，输出都是64，信息预算直接可比；它们的拟合结构和存储稀疏性不同，不称训练计算量完全相同。mean64只利用格均值，是不同输入规范。rawgrid5120与rawmean1280只作原始信息参照，不能称等输入容量；原始岭的尺度和正则几何也不同，不能把差值全部视为纯不可逆信息损失。没有继续同span旋转或新增有标签表示训练。
+
+诊断协议
+目标为物体位置xyz一个组、物体绿色一个组、地面代表颜色通道和台面代表颜色通道分别成组，避免仿射重复RGB通道膨胀指标。所有64维完整读出，无额外标签选坐标。train目标均值/标准差固定，三个split均sequence等权；各组输出共享一个tune正则，沿用G-2固定七个alpha。dev只评分，不选择结构。报告标准化MSE、源字段单位物理MSE和逐sequence向量误差。不同组单位不混成总分。
+
+主要结果（标准化MSE，越低越好）
+全局grid64：物体位置0.712424、绿色1.012753、地面0.019634、台面0.052252。
+四格16×4：位置0.751023、绿色1.098506、地面0.029109、台面0.151252。固定分区并没有自动保护小物体因素，背景颜色也受损。
+mean32+空间差异32：位置0.761930、绿色0.984552、地面0.023022、台面0.062202。绿色仅从1.012753降至0.984552，位置从0.712424升到0.761930，未达到同时保留的目标；这不是足以推进扩容的总体优势。
+mean64：位置0.839012、绿色0.718736、地面0.015265、台面0.042971。其位置较弱而颜色较强，再次说明两类因素与方差/空间分配有取舍，不能仅报告其中一类。
+rawgrid：位置0.617450、绿色0.517842；rawmean：位置0.815374、绿色0.475615。rawgrid位置更强但绿色略弱于rawmean，空间更宽不等于所有诊断都更好。
+
+物理单位MSE也保留相同主方向：global位置/绿色0.00663884/0.04542921，cell16×4为0.00726097/0.04927586，split32+32为0.00743968/0.04416420；rawgrid为0.00407501/0.02322890。位置是xyz组平均平方误差，不能与单个轴或不同组的单位直接比较。
+
+整体信息保留
+采用原grid欧氏坐标中的64维所选跨度正交投影误差，白化前后同跨度，重构指标不受输出白化影响。dev全输入归一化重构误差：globalgrid64为0.10904，cell16×4为0.20755，mean32+diff32为0.13752，mean64为0.48242。每格、每split误差和局部PCA训练方差保留均保存。全局PCA对总体方差更有效，但即便重构误差最低仍没有充分保留物体绿色；整体能量不能替代语义信息评价。mean64重构grid损失空间差异是其输入约束所致，不能与global的重构数值混同为算法优化失败。
+
+核验与限制
+24份预测经独立原/对偶正规方程重算，主程序使用thin SVD；最大预测误差1.19e-13，标准化指标误差2.61e-15，目标/sequence/frame逐值一致。压缩映射维度和有效秩、四格support、均值载荷一致及空间差异载荷零和均核验；统一白化保留跨度通过。输入、源码和依赖哈希保存，结果完整保留。
+
+按20条dev完整sequence配对bootstrap5000次，区间仅为这些已反复使用序列的条件不确定性，无多重比较校正。未按结果改结构或增加第二轮配比。sequence内部reset/干预语义尚未完全核实，但本次只做静态读出和重构，没有跨帧建模；不能称物理动力学或因果发现。数据量、编码器/池化、有限线性readout及训练正则都限制结论。单个固定分区失败不否定所有空间压缩，但当前没有支持扩大这两个简单方案的证据。
+
+交付与后续
+代码scripts/spatial_information_retention_20261012.py；产物runs/spatial_information_retention_20261012含maps、results、reconstruction、compression_meta、audit、independent_validation、map_validation、paired_comparisons、config、manifest及24份预测。读出公共函数来自complex_route_comparison_20261012.py，其哈希及备份源码已保存。
+G-4a计算完成，G-4输入保留问题未解决。保留global/mean两种参照，暂停cell16×4与32+32结构扩展；若后续提出新压缩目标，应先明确怎样在不读标签的条件下保护弱目标信息，独立于本次dev冻结后再评价。不用这些旧开发序列反复挑结构后称确认。
+
+全部标准化与物理指标
+global_grid64 object_position: normalized=0.71242427, physical=0.006638835177, alpha=0.1
+global_grid64 object_green: normalized=1.01275270, physical=0.04542920732, alpha=1.0
+global_grid64 floor: normalized=0.01963353, physical=0.0001918442048, alpha=0.01
+global_grid64 stage: normalized=0.05225172, physical=0.0005926104702, alpha=1e-06
+cell16x4 object_position: normalized=0.75102317, physical=0.007260972146, alpha=0.1
+cell16x4 object_green: normalized=1.09850612, physical=0.04927586213, alpha=1.0
+cell16x4 floor: normalized=0.02910853, physical=0.0002844268856, alpha=0.01
+cell16x4 stage: normalized=0.15125169, physical=0.001715414114, alpha=0.01
+mean32_diff32 object_position: normalized=0.76192962, physical=0.007439682278, alpha=0.1
+mean32_diff32 object_green: normalized=0.98455182, physical=0.0441641961, alpha=1.0
+mean32_diff32 floor: normalized=0.02302192, physical=0.000224953018, alpha=0.01
+mean32_diff32 stage: normalized=0.06220244, physical=0.0007054660909, alpha=1e-06
+mean64 object_position: normalized=0.83901202, physical=0.009023063438, alpha=0.1
+mean64 object_green: normalized=0.71873595, physical=0.03224045198, alpha=0.1
+mean64 floor: normalized=0.01526543, physical=0.0001491623849, alpha=0.01
+mean64 stage: normalized=0.04297060, physical=0.0004873490776, alpha=1e-06
+raw_grid object_position: normalized=0.61745028, physical=0.004075012572, alpha=0.01
+raw_grid object_green: normalized=0.51784159, physical=0.02322890171, alpha=0.01
+raw_grid floor: normalized=0.00662559, physical=6.47403392e-05, alpha=0.0001
+raw_grid stage: normalized=0.01870791, physical=0.0002121749438, alpha=0.0001
+raw_mean object_position: normalized=0.81537368, physical=0.008717035897, alpha=0.01
+raw_mean object_green: normalized=0.47561539, physical=0.02133475442, alpha=0.0001
+raw_mean floor: normalized=0.00722695, physical=7.061634767e-05, alpha=0.0001
+raw_mean stage: normalized=0.01921582, physical=0.0002179352829, alpha=0.0001

@@ -1,0 +1,70 @@
+G-6a 非线性信息诊断；2026-10-13。
+结论：CW结果更支持PCA64信息截断问题，当前适度RBF非线性未恢复原始输入线性可读的物体位置/green信息。cabinet位置有同输入非线性读出收益，但夹爪没有超过raw线性；跨demo标签错配仍保留较强cabinet表现，必须考虑共享任务进度捷径。结果是监督信息诊断，不是新解释机制、独立因素恢复或因果证据。
+CW固定10train/3tune/20dev，mean1280与grid5120；物体xy和green单独报告，背景仅floor红/stage红代表，不以冗余RGB通道加权。cabinet为预定新任务现存30/10/10，目标ee xyz与2夹爪关节。所有dev此前已查看，本轮仍探索。
+PCA64仅训练特征拟合、不白化。raw/PCA线性各用单一能量尺度归一，RBF仅PCA64输入，带宽为训练非零距离中位数×.5/1/2，alpha为1e-6/1e-4/.01/.1/1/10/100。坐标预算相同不代表RBF与线性模型容量相同：RBF有每训练帧一个中心、21候选对线性7候选。全部选择只tune，按目标组demo等权；train拟合帧加权。
+负控：仅训练标签在训练episode间作无固定点映射，按各demo归一化帧进度插值对齐另一train轨迹；不使用tune/dev标签拟合。此控制保留轨迹平滑性与共享进度，因此检验场景特定对应，不能当彻底消除时序捷径的随机标签。负控也按真实tune选正则。
+结果为dev每demo等权、train尺度标准化MSE，越低越好；下表逐目标列raw线性/PCA64线性/PCA64RBF，括号为RBF标签错配负控。
+cw mean object_xy : 0.526747 / 0.728195 / 0.741989 (shuffle=0.991581); RBF sigma_mult=2,alpha=0.0001
+cw mean object_green : 0.445374 / 0.716952 / 0.767217 (shuffle=1.198181); RBF sigma_mult=1,alpha=0.0001
+cw mean floor_red : 0.007606 / 0.015228 / 0.008192 (shuffle=0.984349); RBF sigma_mult=2,alpha=1e-06
+cw mean stage_red : 0.020997 / 0.042973 / 0.039827 (shuffle=1.063761); RBF sigma_mult=2,alpha=1e-06
+cw grid object_xy : 0.314351 / 0.533343 / 0.527051 (shuffle=0.978228); RBF sigma_mult=2,alpha=0.0001
+cw grid object_green : 0.492181 / 0.983171 / 0.975929 (shuffle=1.198960); RBF sigma_mult=2,alpha=0.0001
+cw grid floor_red : 0.007616 / 0.019656 / 0.011668 (shuffle=0.984342); RBF sigma_mult=2,alpha=1e-06
+cw grid stage_red : 0.018996 / 0.052256 / 0.052947 (shuffle=1.063762); RBF sigma_mult=2,alpha=1e-06
+cabinet mean ee_xyz : 0.038175 / 0.054504 / 0.031880 (shuffle=0.068178); RBF sigma_mult=2,alpha=1e-06
+cabinet mean gripper : 0.211906 / 0.292083 / 0.242077 (shuffle=0.262960); RBF sigma_mult=1,alpha=0.0001
+
+配对demo误差差值（参照减方法正值改善）；2000次bootstrap，只反映固定数据及拟合条件的demo抽样，不作广泛任务推断：
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_xy', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': -0.013794878125190735, 'paired_demo_ci95': [-0.028891456723213194, 0.00036318346858022724]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_xy', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.20144730806350708, 'paired_demo_ci95': [0.17650742039084433, 0.2275303617119789]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_xy', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.2152421861886978, 'paired_demo_ci95': [-0.23267200369387867, -0.1971303139999509]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_xy', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.24959193170070648, 'paired_demo_ci95': [0.22774946734309198, 0.273023109510541]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_green', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': -0.05026516169309616, 'paired_demo_ci95': [-0.07432698458433151, -0.02571031209081413]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_green', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.27157796174287796, 'paired_demo_ci95': [0.23163685087114572, 0.3139883153140545]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_green', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.3218431234359741, 'paired_demo_ci95': [-0.3588297126069665, -0.2846541555598378]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'object_green', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.4309639409184456, 'paired_demo_ci95': [0.3759313594922423, 0.4854917249083519]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'floor_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.007036564475856722, 'paired_demo_ci95': [0.00621064874343574, 0.007880253518233075]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'floor_red', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.007622353010810911, 'paired_demo_ci95': [0.006658131817239337, 0.008525870968587696]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'floor_red', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.0005857885349541903, 'paired_demo_ci95': [-0.0013528593495720997, 0.00020098616078030308]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'floor_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.9761571028036997, 'paired_demo_ci95': [0.8976530644122978, 1.0536269526852993]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'stage_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.003145789634436369, 'paired_demo_ci95': [-0.0011287158587947488, 0.007587420421186835]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'stage_red', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.02197653944604099, 'paired_demo_ci95': [0.018578128755325454, 0.02577645209268667]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'stage_red', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.018830749811604618, 'paired_demo_ci95': [-0.023081752520520242, -0.014889818239025772]}
+{'dataset': 'cw', 'view': 'mean', 'group': 'stage_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 1.023933741543442, 'paired_demo_ci95': [0.950377406233456, 1.0983661653823218]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_xy', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.006292404234409332, 'paired_demo_ci95': [-0.001001252606511116, 0.014330918379127979]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_xy', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.2189924366772175, 'paired_demo_ci95': [0.19981325298547745, 0.23724638480693097]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_xy', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.21270003244280816, 'paired_demo_ci95': [-0.23131500346586106, -0.1948942968994379]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_xy', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.45117717832326887, 'paired_demo_ci95': [0.4232914078980684, 0.4805569720640778]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_green', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.007241994142532349, 'paired_demo_ci95': [-0.013188596367835998, 0.027615091428160658]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_green', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.49098951518535616, 'paired_demo_ci95': [0.417737524881959, 0.5619940342754124]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_green', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.4837475210428238, 'paired_demo_ci95': [-0.5503859093412757, -0.4138954618945718]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'object_green', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.22303145229816437, 'paired_demo_ci95': [0.18208032600581647, 0.26647731013596054]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'floor_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.007987878937274217, 'paired_demo_ci95': [0.006699506610166282, 0.009358877817867324]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'floor_red', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.012039753119461238, 'paired_demo_ci95': [0.010708054675487801, 0.013574495809152721]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'floor_red', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.004051874182187021, 'paired_demo_ci95': [-0.0050809273240156475, -0.0029615407052915547]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'floor_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.9726740468293429, 'paired_demo_ci95': [0.8957886533252896, 1.0475123093335423]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'stage_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': -0.0006905822083353996, 'paired_demo_ci95': [-0.004778954056091606, 0.003593899654224501]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'stage_red', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.033260603854432705, 'paired_demo_ci95': [0.02939299621270038, 0.037076941520208496]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'stage_red', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.033951186062768104, 'paired_demo_ci95': [-0.03763637885218486, -0.030456485649338002]}
+{'dataset': 'cw', 'view': 'grid', 'group': 'stage_red', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 1.0108152456581592, 'paired_demo_ci95': [0.9367209728388116, 1.0847751458222048]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'ee_xyz', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.022624014783650635, 'paired_demo_ci95': [0.01274325363105163, 0.03329696126515045]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'ee_xyz', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.016329272463917733, 'paired_demo_ci95': [0.004190134545788169, 0.02775544009171425]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'ee_xyz', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': 0.006294742319732904, 'paired_demo_ci95': [0.00019909950904548176, 0.013243957601953288]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'ee_xyz', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.036297802533954385, 'paired_demo_ci95': [0.027469494799152016, 0.04539921215735373]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'gripper', 'method': 'pca64_rbf_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.050006736814975736, 'paired_demo_ci95': [0.03078388623893261, 0.06880717154592272]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'gripper', 'method': 'raw_linear_real', 'reference': 'pca64_linear_real', 'positive_improves': 0.08017736151814461, 'paired_demo_ci95': [0.04590782426297665, 0.11586003223434088]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'gripper', 'method': 'pca64_rbf_real', 'reference': 'raw_linear_real', 'positive_improves': -0.03017062470316887, 'paired_demo_ci95': [-0.05529791962355375, -0.005497496817260986]}
+{'dataset': 'cabinet', 'view': 'mean', 'group': 'gripper', 'method': 'pca64_rbf_real', 'reference': 'pca64_rbf_episode_shuffle', 'positive_improves': 0.020883184671401978, 'paired_demo_ci95': [0.00025641389191150666, 0.04346530981361866]}
+
+校准成本：
+{'dataset': 'cw', 'view': 'mean', 'control': 'real', 'pca_seconds': 0.29972389999602456, 'readout_selection_seconds': 0.2771804000076372, 'train_frames': 640, 'kernel_matrix_mib': 3.125, 'raw_width': 1280, 'nonlinear_centers': 640, 'linear_alpha_candidates': 7, 'rbf_candidates': 21}
+{'dataset': 'cw', 'view': 'mean', 'control': 'episode_shuffle', 'pca_seconds': 0.29972389999602456, 'readout_selection_seconds': 0.2829677999980049, 'train_frames': 640, 'kernel_matrix_mib': 3.125, 'raw_width': 1280, 'nonlinear_centers': 640, 'linear_alpha_candidates': 7, 'rbf_candidates': 21}
+{'dataset': 'cw', 'view': 'grid', 'control': 'real', 'pca_seconds': 1.0304915000015171, 'readout_selection_seconds': 0.2824876999948174, 'train_frames': 640, 'kernel_matrix_mib': 3.125, 'raw_width': 5120, 'nonlinear_centers': 640, 'linear_alpha_candidates': 7, 'rbf_candidates': 21}
+{'dataset': 'cw', 'view': 'grid', 'control': 'episode_shuffle', 'pca_seconds': 1.0304915000015171, 'readout_selection_seconds': 0.2920744000002742, 'train_frames': 640, 'kernel_matrix_mib': 3.125, 'raw_width': 5120, 'nonlinear_centers': 640, 'linear_alpha_candidates': 7, 'rbf_candidates': 21}
+{'dataset': 'cabinet', 'view': 'mean', 'control': 'real', 'pca_seconds': 0.5069954000064172, 'readout_selection_seconds': 0.4032649000000674, 'train_frames': 1026, 'kernel_matrix_mib': 8.031280517578125, 'raw_width': 1280, 'nonlinear_centers': 1026, 'linear_alpha_candidates': 7, 'rbf_candidates': 21}
+{'dataset': 'cabinet', 'view': 'mean', 'control': 'episode_shuffle', 'pca_seconds': 0.5069954000064172, 'readout_selection_seconds': 0.41844040001160465, 'train_frames': 1026, 'kernel_matrix_mib': 8.031280517578125, 'raw_width': 1280, 'nonlinear_centers': 1026, 'linear_alpha_candidates': 7, 'rbf_candidates': 21}
+成本计时中pca_seconds为PCA准备，readout_selection_seconds为已构建核后的正则选择与独立复算；不包含核矩阵构建/eigendecomposition，因此不能当端到端训练耗时。核矩阵大小、中心数、候选数量明确记录；CPU，无神经网络扩容。
+每个核岭预测均以独立SPD直接解重算；最大预测差=1.190077938417744e-07；保存物理量预测后独立重算标准化宏平均指标最大差=2.086162567138672e-07。近小alpha病态导致最大误差约1e-7，仍低于预定1e-6验证阈值。
+首两次执行分别遇selection文件路径拼接和numpy整数episode字典键JSON保存错误；已保存失败记录并修复，未据dev修改方法。最终配置、PCA映射、真实/错配预测、选中系数、全部tune候选、源哈希与独立核验保留。
+路线判断：CW不要继续盲目增加非线性容量；先保留raw/grid信息诊断。cabinet可保留小核方法作为监督可读性参考，但共享进度负控仍强，不把位置改善自动解释成因素解耦。

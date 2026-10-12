@@ -1,7 +1,8 @@
 import pathlib,json,hashlib
 import numpy as np
 import torch
-TEST_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+from device_utils import select_device
+TEST_DEVICE = str(select_device())
 from scipy import linalg as la
 from sklearn.linear_model import Ridge
 from e03_core import *

@@ -1,0 +1,161 @@
+路线B B-4：预测相关连续低秩子空间机制诊断
+2026-10-12；R2-3/B-3后续；计算、独立数值复算和旋转等变性核验完成。只使用旧r0探索数据。
+
+结论
+本次结果更直接支持“按最高总体预测能量压缩会丢掉差异信息”，而不只是原坐标轴分组错误。新方法允许128维内连续旋转，且经随机正交坐标变换后子空间投影矩阵误差仅8.60e-15；去掉轴分组限制仍不能让top4/top8稳定恢复差异。另一方面，部分差异可在预测谱中更靠后的同宽组读出，因此不能说时间统计根本没有这些信息，也不能把较低谱排序等同于差异本身不可预测。
+
+固定协议与容量区别
+输入是Pong/Pinball现有FP32编码器的128维白化缓存。多滞后h=1/2/4/8，以train白化坐标中的C_h=E[(x_t-m)(x_{t+h}-m)^T]构造M=[C_1,C_2,C_4,C_8]/2，左奇异向量按奇异值降序截取rank4/8，得到单个全局共享子空间。没有因素标签进入M或SVD。seed0用全train，seed1/2用64帧块重采样权重；每个原时间对的权重取两端次数最小值，不连接抽样片段制造伪时间对。白化是既有完整train拟合的固定规范，bootstrap不重新白化，所以稳定性结论条件于已有缓存。
+
+固定残差分支先去除第一个预测输入方向，在其正交补内同时投影过去和未来，再计算同一多滞后SVD。该方向只是最强预测方向，不能称为已识别的语义公共因素。PCA参照在保留128维内恢复原方差、仅train拟合主方向，再把对应跨度映回白化坐标并欧氏正交化；避免对白化近单位协方差的简并PCA赋予语义。另有同rank随机正交子空间。全部3次拟合、rank4/8及两个固定预测分支完整报告，没有按dev选择配置或seed。
+
+单全局无标签子空间只提供一个候选，并被所有诊断目标共用。额外监督定位参照分别在原full_block4和完整预测谱中划连续4/8维组，按每目标train标准化协方差能量在32/16候选里选一组；两种监督选组参照具有相同候选数量，但和单全局无标签子空间有不同的语义选择与搜索预算，不能混作完全公平的自动发现排名。完整128维读出仅用于信息存在性参照。
+
+因素定义沿用B-3：Pong左右paddle、Pinball cyl0/2/3/4，公共量为训练标准化因素均值，差异为固定Helmert对比。训练因素标签仅用于线性诊断读出、谱能量检查和明确标注的选组参照；tune从既有7个岭正则值选读出；dev仅评分。谱能量是原完整train中各正交谱方向与标准化目标的协方差平方份额，它量化诊断信息位置，不是因果量，也没有用它反向优化子空间。
+
+关联能量的规范与不变量
+逐目标份额定义为 e_i(y)=(u_i^T Cov_train[X,y])² / sum_j(u_j^T Cov_train[X,y])²，因此对任意非零目标缩放及符号变化不变；统一增加常数也被中心化消除。本次数值缩放核验最大误差6.11e-16。输入的原始因素先按train逐因素标准化，再做固定Helmert对比；这规定了公共/差异度量，换成不同因素权重或更换因素集合会改变研究问题。Helmert系数正交只表示系数空间正交，不保证这些随机变量统计不相关。单个差异的结论依赖固定Helmert基，不能把某一差异0推广为全部差异。
+为审计该依赖，额外计算整个差异子空间的联合关联能量：对原已标准化因素的Helmert对比直接计算Cov，不再逐差异重标准化，随后对差异列求平方和。此Frobenius份额对差异子空间内任意正交旋转不变；数值核验最大误差1.81e-16。完整train前8预测方向保留联合差异能量Pong1.57%、Pinball19.95%，覆盖80%分别需要前14/30轴；两次重采样为Pong14.14%/9.58%、Pinball24.60%/14.89%。这支持受检差异集合整体在该预测排序中被低秩截断大量遗漏，而不是只靠某个Helmert方向的命名产生结论。谱排序由train多滞后奇异值确定，关联能量不参与排序；近邻奇异方向可随样本变化，已用子空间主角而非单轴符号报告稳定性。
+
+机制结果
+Pong完整train预测top4/top8仅覆盖差异训练关联能量1.33%/1.57%；覆盖50%/80%需要前13/14个谱方向，峰值在第13轴。top8覆盖公共量80.77%，却几乎遗漏差异。对应dev差异R²为-0.00173/-0.00174；原完整单4维块为0.79319，完整128维为0.88478。监督从预测谱选4维第4组（1-based；轴13–16）可达0.60664，支持差异仍在较后谱成分中；但重采样相应选组读出只有0.23637/0.23427，不能说它稳定优于原分块。
+
+Pinball预测top4覆盖三个差异关联能量0.71%/1.93%/0.67%，top8为0.97%/32.87%/21.97%；达到80%需要前30/20/33轴。公共量top4已覆盖87.77%。top8的dev差异R²为[-0.00469,0.26614,0.11712]，完整128维为[0.78402,0.84707,0.76731]。同宽PCA为[-0.00500,0.04571,0.03834]，因此第二、第三差异相对于PCA确有收益；但相对于带标签选择的原8维分组[0.40326,0.29383,0.33797]仍有明显缺口，不能把PCA上的收益写成稳定自动恢复。
+
+去除首预测方向没有解决问题。Pong完整train残差top8差异R²仍约-0.00184；Pinball为[0.05401,0.26522,0.16986]，公共量同时从0.89171降至0.39766。不能用小幅差异提升掩盖公共信息损失。Pinball公共量在首轴关联能量占57.85%，但差异分散至更后谱方向，仅去掉首轴不足以实现公共/私有分离。Pong首轴仅占公共关联能量0.15%，进一步说明“最强预测方向=公共因素”的命名不成立。
+
+前8轴只覆盖总体平方奇异值能量的Pong37.21%、Pinball27.63%，本来就是严格低秩瓶颈。当前证据只能支持此具体白化多滞后能量排序与目标差异不对齐，不能推出所有时序学习目标失败；也不能根据旧dev改秩后把新增结果称为确认。
+
+预测功能及稳定性
+为检查无标签目标是否有效，另用各单全局子空间预测未来1/2/4/8的完整白化表示，所有时距共同裁剪到n-8帧；未来读出只用train拟合，以tune总体MSE选择单个岭系数。保存低秩特征映射、预测系数/均值及逐样本误差，可以从原缓存精确重建全部512维预测，避免重复保存大数组。NMSE以train均值常量预测为1。
+完整train rank8的预测/PCA/随机NMSE：Pong0.94237/0.96651/0.98991，Pinball0.97004/0.98106/0.99445。预测压缩确实改善这个整体未来目标，仍不等于它保留了所需因素差异。全部重采样结果列于附录，未只选最好seed。
+
+相对完整train子空间，预测rank4两次重采样的平均平方主角余弦：Pong0.404/0.437，Pinball0.528/0.483；rank8为Pong0.636/0.649、Pinball0.602/0.596。部分方向明显变化，未形成独立轨迹稳定性证据。谱截断边界相对平方奇异值间隙也保存于independent_validation.json，用于区分近谱间隙和实现错误；不以坐标符号翻转误判子空间变化。
+
+数据边界、审计与限制
+train/tune/dev为8192/1024/1024，源索引20000–28191、28320–29343、29472–30495，中间隔128帧；所有索引连续、split分离，全部时序对及未来读出只在各自split内。缓存没有真实episode/reset字段，因此连续索引不能证明没有重置或对象重采样；H-2来源审计的限制继续适用。r0已反复检查，所有dev结果是探索，不是新确认。没有使用干预标签拟合、物理参数、官方test或新轨迹，不能宣称物理动力学或无监督语义发现。
+
+独立验证以直接正规方程替代主程序的特征分解，重算396个因素预测和48个分解式未来预测器。最大因素预测误差4.48e-13、R²差1.35e-14、未来逐样本MSE差1.67e-16；原始目标和源索引逐值一致。另由原缓存独立einsum重建时序矩阵，误差2.11e-15；SVD特征方程误差2.00e-15；全输入正交旋转后的子空间投影矩阵误差8.60e-15。全部通过。数值复算和旋转等变性不代替独立数据确认。
+
+交付与后续
+代码scripts/mainline_predictive_subspace_20261012.py；只依赖现有mainline_regroup_20261012.py中的数据加载/通用函数，该依赖哈希已保存。命令使用C:/Users/lenovo/miniconda3/python.exe，并传入--root F:/2610/CVPR27 --output F:/2610/CVPR27/runs/mainline_predictive_subspace_20261012；加--verify独立复算。
+产物runs/mainline_predictive_subspace_20261012包括config/results/future_results/spectral_energy/stability/audits/independent_validation/manifest、66份因素预测、6份完整基与谱、48个未来分解式预测器及压缩备份；总量低于60MB。备份是同F盘第二份压缩副本，不是异地备份。本批只用本地CPU，无GPU或SSH。
+B-4完成，R2-3仍部分完成。保留“总体预测排序遗漏目标差异”的机制证据和相对PCA的局部改善，不继续盲目去首方向或扩大模型；后续若研究新的无标签组织准则，必须预先明确怎样避免把弱差异按总体预测能量淘汰，再做未使用片段确认。
+
+全部因素结果（R²；无dev择优）
+pong rank4 predictive seed0: paddle_left_y=-0.008078; paddle_right_y=-0.003034; common_standardized_mean=-0.005871; helmert_difference_0=-0.001728
+pong rank4 predictive seed1: paddle_left_y=0.169209; paddle_right_y=0.180819; common_standardized_mean=0.191180; helmert_difference_0=-0.000145
+pong rank4 predictive seed2: paddle_left_y=0.208113; paddle_right_y=0.211105; common_standardized_mean=0.230797; helmert_difference_0=-0.001159
+pong rank4 residual_predictive seed0: paddle_left_y=0.229059; paddle_right_y=0.340988; common_standardized_mean=0.314084; helmert_difference_0=-0.001899
+pong rank4 residual_predictive seed1: paddle_left_y=0.032084; paddle_right_y=0.144250; common_standardized_mean=0.118860; helmert_difference_0=0.059551
+pong rank4 residual_predictive seed2: paddle_left_y=0.090438; paddle_right_y=0.210442; common_standardized_mean=0.174001; helmert_difference_0=-0.001462
+pong rank4 pca_unwhite seed0: paddle_left_y=0.736386; paddle_right_y=0.716872; common_standardized_mean=0.816683; helmert_difference_0=-0.001797
+pong rank4 pca_unwhite seed1: paddle_left_y=0.715499; paddle_right_y=0.692823; common_standardized_mean=0.789738; helmert_difference_0=-0.001793
+pong rank4 pca_unwhite seed2: paddle_left_y=0.746237; paddle_right_y=0.728655; common_standardized_mean=0.829595; helmert_difference_0=-0.001798
+pong rank4 random seed0: paddle_left_y=0.014907; paddle_right_y=0.022618; common_standardized_mean=0.014077; helmert_difference_0=0.051442
+pong rank4 random seed1: paddle_left_y=0.023913; paddle_right_y=0.023689; common_standardized_mean=0.025878; helmert_difference_0=0.006358
+pong rank4 random seed2: paddle_left_y=-0.007935; paddle_right_y=0.039282; common_standardized_mean=0.013679; helmert_difference_0=0.044032
+pong rank4 supervised_best_original seed0: paddle_left_y=0.832800; paddle_right_y=0.842757; common_standardized_mean=0.943852; helmert_difference_0=0.793188
+pong rank4 supervised_best_spectral seed0: paddle_left_y=0.659831; paddle_right_y=0.691917; common_standardized_mean=0.766399; helmert_difference_0=0.606642
+pong rank4 supervised_best_spectral seed1: paddle_left_y=0.169209; paddle_right_y=0.339521; common_standardized_mean=0.240497; helmert_difference_0=0.236370
+pong rank4 supervised_best_spectral seed2: paddle_left_y=0.349823; paddle_right_y=0.465855; common_standardized_mean=0.454838; helmert_difference_0=0.234271
+pong rank8 predictive seed0: paddle_left_y=0.689555; paddle_right_y=0.717390; common_standardized_mean=0.796710; helmert_difference_0=-0.001739
+pong rank8 predictive seed1: paddle_left_y=0.396809; paddle_right_y=0.654087; common_standardized_mean=0.579698; helmert_difference_0=0.141569
+pong rank8 predictive seed2: paddle_left_y=0.523330; paddle_right_y=0.647101; common_standardized_mean=0.648786; helmert_difference_0=0.087335
+pong rank8 residual_predictive seed0: paddle_left_y=0.695649; paddle_right_y=0.746700; common_standardized_mean=0.816994; helmert_difference_0=-0.001838
+pong rank8 residual_predictive seed1: paddle_left_y=0.333491; paddle_right_y=0.550706; common_standardized_mean=0.471902; helmert_difference_0=0.140699
+pong rank8 residual_predictive seed2: paddle_left_y=0.458741; paddle_right_y=0.599782; common_standardized_mean=0.568916; helmert_difference_0=0.264325
+pong rank8 pca_unwhite seed0: paddle_left_y=0.775166; paddle_right_y=0.768261; common_standardized_mean=0.871415; helmert_difference_0=-0.001776
+pong rank8 pca_unwhite seed1: paddle_left_y=0.774902; paddle_right_y=0.767960; common_standardized_mean=0.871025; helmert_difference_0=-0.001774
+pong rank8 pca_unwhite seed2: paddle_left_y=0.775556; paddle_right_y=0.769444; common_standardized_mean=0.872311; helmert_difference_0=-0.001774
+pong rank8 random seed0: paddle_left_y=0.034018; paddle_right_y=0.037390; common_standardized_mean=0.031546; helmert_difference_0=0.075983
+pong rank8 random seed1: paddle_left_y=0.067881; paddle_right_y=0.074147; common_standardized_mean=0.079198; helmert_difference_0=0.008949
+pong rank8 random seed2: paddle_left_y=-0.003152; paddle_right_y=0.047660; common_standardized_mean=0.020914; helmert_difference_0=0.047651
+pong rank8 supervised_best_original seed0: paddle_left_y=0.842327; paddle_right_y=0.851209; common_standardized_mean=0.954654; helmert_difference_0=0.793700
+pong rank8 supervised_best_spectral seed0: paddle_left_y=0.689555; paddle_right_y=0.717390; common_standardized_mean=0.796710; helmert_difference_0=0.586465
+pong rank8 supervised_best_spectral seed1: paddle_left_y=0.396809; paddle_right_y=0.654087; common_standardized_mean=0.579698; helmert_difference_0=0.346116
+pong rank8 supervised_best_spectral seed2: paddle_left_y=0.523330; paddle_right_y=0.647101; common_standardized_mean=0.648786; helmert_difference_0=0.370226
+pong rank128 full128 seed0: paddle_left_y=0.983089; paddle_right_y=0.977798; common_standardized_mean=0.992562; helmert_difference_0=0.884784
+pinball rank4 predictive seed0: cyl_0_active=0.336675; cyl_2_active=0.488375; cyl_3_active=0.462081; cyl_4_active=0.510933; common_standardized_mean=0.871601; helmert_difference_0=-0.004043; helmert_difference_1=0.012980; helmert_difference_2=0.015730
+pinball rank4 predictive seed1: cyl_0_active=0.253597; cyl_2_active=0.382143; cyl_3_active=0.444367; cyl_4_active=0.490264; common_standardized_mean=0.752684; helmert_difference_0=0.001630; helmert_difference_1=0.029075; helmert_difference_2=-0.010209
+pinball rank4 predictive seed2: cyl_0_active=0.383225; cyl_2_active=0.243658; cyl_3_active=0.361251; cyl_4_active=0.249721; common_standardized_mean=0.592221; helmert_difference_0=0.014315; helmert_difference_1=-0.023846; helmert_difference_2=0.045112
+pinball rank4 residual_predictive seed0: cyl_0_active=0.123154; cyl_2_active=0.135287; cyl_3_active=0.165658; cyl_4_active=0.297903; common_standardized_mean=0.313212; helmert_difference_0=-0.004056; helmert_difference_1=0.074974; helmert_difference_2=0.063766
+pinball rank4 residual_predictive seed1: cyl_0_active=0.261738; cyl_2_active=0.371269; cyl_3_active=0.422461; cyl_4_active=0.460707; common_standardized_mean=0.726644; helmert_difference_0=-0.000604; helmert_difference_1=0.029530; helmert_difference_2=-0.007466
+pinball rank4 residual_predictive seed2: cyl_0_active=0.383452; cyl_2_active=0.301850; cyl_3_active=0.482466; cyl_4_active=0.466416; common_standardized_mean=0.728477; helmert_difference_0=0.035515; helmert_difference_1=0.039033; helmert_difference_2=0.127363
+pinball rank4 pca_unwhite seed0: cyl_0_active=0.348006; cyl_2_active=0.507873; cyl_3_active=0.427015; cyl_4_active=0.443510; common_standardized_mean=0.834381; helmert_difference_0=-0.000189; helmert_difference_1=0.010537; helmert_difference_2=0.000721
+pinball rank4 pca_unwhite seed1: cyl_0_active=0.348972; cyl_2_active=0.508396; cyl_3_active=0.428762; cyl_4_active=0.445652; common_standardized_mean=0.836372; helmert_difference_0=0.000104; helmert_difference_1=0.011912; helmert_difference_2=0.000875
+pinball rank4 pca_unwhite seed2: cyl_0_active=0.347293; cyl_2_active=0.508188; cyl_3_active=0.427787; cyl_4_active=0.444197; common_standardized_mean=0.834445; helmert_difference_0=-0.000090; helmert_difference_1=0.011418; helmert_difference_2=0.001133
+pinball rank4 random seed0: cyl_0_active=0.025462; cyl_2_active=0.013200; cyl_3_active=0.023651; cyl_4_active=-0.013950; common_standardized_mean=0.013973; helmert_difference_0=0.044362; helmert_difference_1=0.017396; helmert_difference_2=-0.028041
+pinball rank4 random seed1: cyl_0_active=0.028249; cyl_2_active=0.042018; cyl_3_active=0.034037; cyl_4_active=0.031586; common_standardized_mean=0.050091; helmert_difference_0=0.036510; helmert_difference_1=-0.000211; helmert_difference_2=0.006542
+pinball rank4 random seed2: cyl_0_active=0.011243; cyl_2_active=0.029312; cyl_3_active=0.023025; cyl_4_active=0.073799; common_standardized_mean=0.027584; helmert_difference_0=0.071538; helmert_difference_1=0.006091; helmert_difference_2=0.009321
+pinball rank4 supervised_best_original seed0: cyl_0_active=0.347216; cyl_2_active=0.484994; cyl_3_active=0.490289; cyl_4_active=0.580369; common_standardized_mean=0.926156; helmert_difference_0=0.398611; helmert_difference_1=0.306196; helmert_difference_2=0.182485
+pinball rank4 supervised_best_spectral seed0: cyl_0_active=0.336675; cyl_2_active=0.488375; cyl_3_active=0.462081; cyl_4_active=0.510933; common_standardized_mean=0.871601; helmert_difference_0=0.271159; helmert_difference_1=0.250621; helmert_difference_2=0.105759
+pinball rank4 supervised_best_spectral seed1: cyl_0_active=0.253597; cyl_2_active=0.382143; cyl_3_active=0.444367; cyl_4_active=0.490264; common_standardized_mean=0.752684; helmert_difference_0=0.247302; helmert_difference_1=0.261265; helmert_difference_2=0.136428
+pinball rank4 supervised_best_spectral seed2: cyl_0_active=0.383225; cyl_2_active=0.243658; cyl_3_active=0.361251; cyl_4_active=0.249721; common_standardized_mean=0.592221; helmert_difference_0=0.204342; helmert_difference_1=0.062267; helmert_difference_2=0.056477
+pinball rank8 predictive seed0: cyl_0_active=0.410540; cyl_2_active=0.496330; cyl_3_active=0.545507; cyl_4_active=0.592029; common_standardized_mean=0.891712; helmert_difference_0=-0.004687; helmert_difference_1=0.266143; helmert_difference_2=0.117118
+pinball rank8 predictive seed1: cyl_0_active=0.454585; cyl_2_active=0.477781; cyl_3_active=0.463754; cyl_4_active=0.513997; common_standardized_mean=0.760498; helmert_difference_0=0.099088; helmert_difference_1=0.306285; helmert_difference_2=0.154711
+pinball rank8 predictive seed2: cyl_0_active=0.426656; cyl_2_active=0.456074; cyl_3_active=0.512177; cyl_4_active=0.491149; common_standardized_mean=0.786480; helmert_difference_0=0.105228; helmert_difference_1=0.091340; helmert_difference_2=0.162129
+pinball rank8 residual_predictive seed0: cyl_0_active=0.233983; cyl_2_active=0.158770; cyl_3_active=0.283579; cyl_4_active=0.442164; common_standardized_mean=0.397657; helmert_difference_0=0.054012; helmert_difference_1=0.265221; helmert_difference_2=0.169856
+pinball rank8 residual_predictive seed1: cyl_0_active=0.480578; cyl_2_active=0.532519; cyl_3_active=0.471313; cyl_4_active=0.501916; common_standardized_mean=0.799788; helmert_difference_0=0.100454; helmert_difference_1=0.308509; helmert_difference_2=0.155549
+pinball rank8 residual_predictive seed2: cyl_0_active=0.433843; cyl_2_active=0.450460; cyl_3_active=0.497923; cyl_4_active=0.443129; common_standardized_mean=0.756702; helmert_difference_0=0.116399; helmert_difference_1=0.116017; helmert_difference_2=0.130956
+pinball rank8 pca_unwhite seed0: cyl_0_active=0.356729; cyl_2_active=0.520056; cyl_3_active=0.499649; cyl_4_active=0.556104; common_standardized_mean=0.914005; helmert_difference_0=-0.005000; helmert_difference_1=0.045709; helmert_difference_2=0.038340
+pinball rank8 pca_unwhite seed1: cyl_0_active=0.357667; cyl_2_active=0.518808; cyl_3_active=0.498808; cyl_4_active=0.552226; common_standardized_mean=0.912057; helmert_difference_0=-0.004734; helmert_difference_1=0.046266; helmert_difference_2=0.036282
+pinball rank8 pca_unwhite seed2: cyl_0_active=0.355635; cyl_2_active=0.520231; cyl_3_active=0.501947; cyl_4_active=0.555793; common_standardized_mean=0.914601; helmert_difference_0=-0.005223; helmert_difference_1=0.045431; helmert_difference_2=0.038813
+pinball rank8 random seed0: cyl_0_active=0.060502; cyl_2_active=0.033631; cyl_3_active=0.051638; cyl_4_active=-0.028406; common_standardized_mean=0.040112; helmert_difference_0=0.042657; helmert_difference_1=0.036095; helmert_difference_2=0.012615
+pinball rank8 random seed1: cyl_0_active=0.047293; cyl_2_active=0.039704; cyl_3_active=0.064302; cyl_4_active=0.034995; common_standardized_mean=0.061665; helmert_difference_0=0.053836; helmert_difference_1=0.026647; helmert_difference_2=0.002602
+pinball rank8 random seed2: cyl_0_active=0.076586; cyl_2_active=0.122884; cyl_3_active=0.078714; cyl_4_active=0.140245; common_standardized_mean=0.163723; helmert_difference_0=0.093300; helmert_difference_1=0.018650; helmert_difference_2=0.027101
+pinball rank8 supervised_best_original seed0: cyl_0_active=0.399519; cyl_2_active=0.548247; cyl_3_active=0.510310; cyl_4_active=0.589987; common_standardized_mean=0.925833; helmert_difference_0=0.403264; helmert_difference_1=0.293834; helmert_difference_2=0.337970
+pinball rank8 supervised_best_spectral seed0: cyl_0_active=0.410540; cyl_2_active=0.496330; cyl_3_active=0.545507; cyl_4_active=0.592029; common_standardized_mean=0.891712; helmert_difference_0=0.295250; helmert_difference_1=0.266143; helmert_difference_2=0.241325
+pinball rank8 supervised_best_spectral seed1: cyl_0_active=0.454585; cyl_2_active=0.477781; cyl_3_active=0.463754; cyl_4_active=0.513997; common_standardized_mean=0.760498; helmert_difference_0=0.290237; helmert_difference_1=0.306285; helmert_difference_2=0.241152
+pinball rank8 supervised_best_spectral seed2: cyl_0_active=0.426656; cyl_2_active=0.456074; cyl_3_active=0.512177; cyl_4_active=0.491149; common_standardized_mean=0.786480; helmert_difference_0=0.328791; helmert_difference_1=0.131779; helmert_difference_2=0.199564
+pinball rank128 full128 seed0: cyl_0_active=0.890026; cyl_2_active=0.914240; cyl_3_active=0.892707; cyl_4_active=0.904938; common_standardized_mean=0.997104; helmert_difference_0=0.784020; helmert_difference_1=0.847072; helmert_difference_2=0.767313
+
+全部未来预测NMSE
+pong rank4 predictive seed0: 0.973041
+pong rank4 residual_predictive seed0: 0.970601
+pong rank4 pca_unwhite seed0: 0.984996
+pong rank4 random seed0: 0.996505
+pong rank8 predictive seed0: 0.942370
+pong rank8 residual_predictive seed0: 0.940665
+pong rank8 pca_unwhite seed0: 0.966509
+pong rank8 random seed0: 0.989908
+pong rank4 predictive seed1: 0.959576
+pong rank4 residual_predictive seed1: 0.979653
+pong rank4 pca_unwhite seed1: 0.984138
+pong rank4 random seed1: 0.995577
+pong rank8 predictive seed1: 0.940277
+pong rank8 residual_predictive seed1: 0.962854
+pong rank8 pca_unwhite seed1: 0.964718
+pong rank8 random seed1: 0.990871
+pong rank4 predictive seed2: 0.988545
+pong rank4 residual_predictive seed2: 0.987502
+pong rank4 pca_unwhite seed2: 0.985509
+pong rank4 random seed2: 0.993958
+pong rank8 predictive seed2: 0.966965
+pong rank8 residual_predictive seed2: 0.964980
+pong rank8 pca_unwhite seed2: 0.968488
+pong rank8 random seed2: 0.990889
+pinball rank4 predictive seed0: 0.984275
+pinball rank4 residual_predictive seed0: 0.984839
+pinball rank4 pca_unwhite seed0: 0.989739
+pinball rank4 random seed0: 0.997409
+pinball rank8 predictive seed0: 0.970044
+pinball rank8 residual_predictive seed0: 0.971607
+pinball rank8 pca_unwhite seed0: 0.981055
+pinball rank8 random seed0: 0.994447
+pinball rank4 predictive seed1: 0.984519
+pinball rank4 residual_predictive seed1: 0.984740
+pinball rank4 pca_unwhite seed1: 0.989609
+pinball rank4 random seed1: 0.997223
+pinball rank8 predictive seed1: 0.973262
+pinball rank8 residual_predictive seed1: 0.973099
+pinball rank8 pca_unwhite seed1: 0.981060
+pinball rank8 random seed1: 0.994201
+pinball rank4 predictive seed2: 0.988156
+pinball rank4 residual_predictive seed2: 0.986344
+pinball rank4 pca_unwhite seed2: 0.989684
+pinball rank4 random seed2: 0.997198
+pinball rank8 predictive seed2: 0.975159
+pinball rank8 residual_predictive seed2: 0.975248
+pinball rank8 pca_unwhite seed2: 0.981074
+pinball rank8 random seed2: 0.994061
