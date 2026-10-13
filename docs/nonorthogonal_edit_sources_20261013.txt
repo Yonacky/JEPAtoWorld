@@ -1,0 +1,15 @@
+G-7g 方法出处与本地改动（2026-10-13）
+
+Ziehe, Laskov, Nolte, Müller (2004), A Fast Algorithm for Joint Diagonalization with Non-orthogonal Transformations and its Application to Blind Source Separation, JMLR 5:777–800.
+原文：https://www.jmlr.org/papers/v5/ziehe04a.html
+PDF：https://www.jmlr.org/papers/volume5/ziehe04a/ziehe04a.pdf
+该工作说明非正交联合对角化可用保持可逆性的优化实现。这里借鉴非正交解混的研究方向，并未复现其算法或盲源假设。本实验并非其矩阵合同联合对角化目标，而是相似变换 W E W^-1 构造互斥斜投影，直接优化有监督匹配目标的编辑误差与跨因素泄漏；用SVD双侧奇异值约束和Armijo，不称原算法实现。
+
+Cardoso, Souloumiac (1996), Jacobi Angles for Simultaneous Diagonalization, SIAM Journal on Matrix Analysis and Applications 17(1):161–164.
+原文：https://epubs.siam.org/doi/10.1137/S0895479893259546
+作者资料：https://www2.iap.fr/users/cardoso/jointdiag.html
+该文提供正交Jacobi同时对角化基础。本实验正交族仅作为相同编辑目标、同起点和同预算的控制；不把优化差异归为该文算法优劣。
+
+相对旧工作的实质差别：A-3是在四维稀疏重建上比较局部/非正交读出；本轮是64维全局可逆分块，对真实干预配对编辑优化。N-4已有监督真实目标但强制正交且以retention可行性筛选；本轮比较完全同目标/预算正交与非正交，并把跨因素真实响应泄漏显式写入目标。旧DSReg适配使用白化、Jacobian和旋转目标，本轮不是再做ICA/readout。joint0初始化与PCA跨度固定；不额外搜索广义特征初始化、条件数上限或更多权重。
+
+边界：使用因素身份、干预配对和训练真实目标，属于有监督编辑方法研究。一般非正交变换不提供因素可识别性保证；代数幂等和互斥不等于统计独立、语义解耦或欧氏正交。新结果属于既有ID/OOD数据上的方法探索。

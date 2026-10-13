@@ -1,0 +1,125 @@
+G-7i-eval 生产执行补记（2026-10-13）
+
+冻结四候选在新ID64及背景OOD64场景评分完成，两域独立审计均PASS。相对同目标正交方案，四项预定主比较的98.75% Bonferroni bootstrap区间全部落在改善方向。该结果支持本模拟器新场景上的有监督、两参照线性编辑收益，不是新对象、跨模型或跨数据集验证；最近邻恢复不是图像生成或控制成功。
+
+原入口报告、FREEZE及36项旧manifest内容未改，逐hash重新核验全部通过。本补记单独记录生产，不重跑模型、不重新拟合、不据结果选择候选。128scene共3456张新图；每域32独立pair，先scene/task平均再factor等权宏平均再双向pair平均，10000次固定seed。主表排除recipient/donor/真实target任一anchor，27检索库完整保留。
+
+ID 主比较（非正交λ1减正交λ1）：
+单因素宏相对平方误差差值=-0.036653995；98.75%CI=[-0.039773580,-0.033742327]；描述性95%CI=[-0.039102027,-0.034333551]
+单因素颜色恢复率差值=0.121209320；98.75%CI=[0.109813875,0.133205725]；描述性95%CI=[0.112009985,0.130779632]
+全部四方法，anchor排除：方法 | 单因素宏误差 | 颜色恢复 | 单因素非目标保持 | 双因素宏误差 | 双因素全部目标恢复 | 双因素非目标保持
+no_edit | 1.00000000 | 0.00000000 | 1.00000000 | 1.00000000 | 0.00000000 | 1.00000000
+joint0_twoanchors | 0.47841779 | 0.74093935 | 0.97186267 | 0.30786525 | 0.89090074 | 0.94353554
+orth_lambda1 | 0.44112058 | 0.71042899 | 0.97372719 | 0.30094810 | 0.90211397 | 0.94197304
+oblique_lambda1 | 0.40446658 | 0.83163831 | 0.97619268 | 0.28127945 | 0.92245711 | 0.95165441
+各任务全部指标（相对误差/全部目标正确/全部非目标保持/完整目标状态检索），含anchor敏感性与排除主口径并列：
+no_edit | position | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | background | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | background | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+color | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+color | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+background | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+background | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color+background | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color+background | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+joint0_twoanchors | position | all_edits_sensitivity | 0.35501434 | 0.95218461 | 0.98430266 | 0.93659578
+joint0_twoanchors | position | anchor_excluded_primary | 0.37033391 | 0.94679179 | 0.98303439 | 0.92996487
+joint0_twoanchors | color | all_edits_sensitivity | 0.73416636 | 0.73368779 | 1.00000000 | 0.73368779
+joint0_twoanchors | color | anchor_excluded_primary | 0.75202082 | 0.74093935 | 1.00000000 | 0.74093935
+joint0_twoanchors | background | all_edits_sensitivity | 0.30174437 | 0.94093605 | 0.93203848 | 0.87525318
+joint0_twoanchors | background | anchor_excluded_primary | 0.31289865 | 0.93629808 | 0.93255362 | 0.87088572
+joint0_twoanchors | position+color | all_edits_sensitivity | 0.36165412 | 0.86769387 | 1.00000000 | 0.86769387
+joint0_twoanchors | position+color | anchor_excluded_primary | 0.37454515 | 0.86672794 | 1.00000000 | 0.86672794
+joint0_twoanchors | position+background | all_edits_sensitivity | 0.24144777 | 0.95934606 | 0.82335069 | 0.78797743
+joint0_twoanchors | position+background | anchor_excluded_primary | 0.24854957 | 0.95413603 | 0.83170956 | 0.79163603
+joint0_twoanchors | color+background | all_edits_sensitivity | 0.29064135 | 0.86291956 | 0.99913194 | 0.86212384
+joint0_twoanchors | color+background | anchor_excluded_primary | 0.30050102 | 0.85183824 | 0.99889706 | 0.85082721
+orth_lambda1 | position | all_edits_sensitivity | 0.35561601 | 0.96263744 | 0.98491753 | 0.94759115
+orth_lambda1 | position | anchor_excluded_primary | 0.37057650 | 0.95737796 | 0.98335799 | 0.94078217
+orth_lambda1 | color | all_edits_sensitivity | 0.62811567 | 0.70211227 | 1.00000000 | 0.70211227
+orth_lambda1 | color | anchor_excluded_primary | 0.63691665 | 0.71042899 | 1.00000000 | 0.71042899
+orth_lambda1 | background | all_edits_sensitivity | 0.30496077 | 0.94578270 | 0.93489583 | 0.88274016
+orth_lambda1 | background | anchor_excluded_primary | 0.31586859 | 0.94189164 | 0.93782359 | 0.88151812
+orth_lambda1 | position+color | all_edits_sensitivity | 0.34429698 | 0.89388021 | 1.00000000 | 0.89388021
+orth_lambda1 | position+color | anchor_excluded_primary | 0.35479249 | 0.89310662 | 1.00000000 | 0.89310662
+orth_lambda1 | position+background | all_edits_sensitivity | 0.24343791 | 0.96187789 | 0.82197627 | 0.78768808
+orth_lambda1 | position+background | anchor_excluded_primary | 0.25059270 | 0.95661765 | 0.82674632 | 0.78740809
+orth_lambda1 | color+background | all_edits_sensitivity | 0.28846810 | 0.86682581 | 0.99934896 | 0.86617477
+orth_lambda1 | color+background | anchor_excluded_primary | 0.29745911 | 0.85661765 | 0.99917279 | 0.85579044
+oblique_lambda1 | position | all_edits_sensitivity | 0.32479487 | 0.98849826 | 0.98734086 | 0.97583912
+oblique_lambda1 | position | anchor_excluded_primary | 0.33848136 | 0.98677885 | 0.98576183 | 0.97254068
+oblique_lambda1 | color | all_edits_sensitivity | 0.57582373 | 0.82016782 | 1.00000000 | 0.82016782
+oblique_lambda1 | color | anchor_excluded_primary | 0.58202953 | 0.83163831 | 1.00000000 | 0.83163831
+oblique_lambda1 | background | all_edits_sensitivity | 0.28291126 | 0.95782697 | 0.94093605 | 0.90194589
+oblique_lambda1 | background | anchor_excluded_primary | 0.29288887 | 0.95386464 | 0.94281620 | 0.89889978
+oblique_lambda1 | position+color | all_edits_sensitivity | 0.31477940 | 0.92990451 | 1.00000000 | 0.92990451
+oblique_lambda1 | position+color | anchor_excluded_primary | 0.32500686 | 0.92775735 | 1.00000000 | 0.92775735
+oblique_lambda1 | position+background | all_edits_sensitivity | 0.23422094 | 0.96317998 | 0.84917535 | 0.81922743
+oblique_lambda1 | position+background | anchor_excluded_primary | 0.24086044 | 0.95955882 | 0.85514706 | 0.82187500
+oblique_lambda1 | color+background | all_edits_sensitivity | 0.26916989 | 0.88758681 | 0.99985532 | 0.88744213
+oblique_lambda1 | color+background | anchor_excluded_primary | 0.27797104 | 0.88005515 | 0.99981618 | 0.87987132
+独立审计：每scene/task/model固定前7原5120维编辑，共10752项；误差maxabs=2.8843594179761567e-13，坐标解算预测maxabs=1.509903313490213e-14。完整edit tuple/mask、全部保存edit聚合及pair区间核验通过，CI maxabs=1.3877787807814457e-17。该审计不是逐个原空间复算所有编辑；全量指标归约与预定样本原空间复算区分报告。
+
+OOD 主比较（非正交λ1减正交λ1）：
+单因素宏相对平方误差差值=-0.075882009；98.75%CI=[-0.087290043,-0.065744496]；描述性95%CI=[-0.084966671,-0.067668566]
+单因素颜色恢复率差值=0.055473373；98.75%CI=[0.039802145,0.072739749]；描述性95%CI=[0.043036936,0.068925666]
+全部四方法，anchor排除：方法 | 单因素宏误差 | 颜色恢复 | 单因素非目标保持 | 双因素宏误差 | 双因素全部目标恢复 | 双因素非目标保持
+no_edit | 1.00000000 | 0.00000000 | 1.00000000 | 1.00000000 | 0.00000000 | 1.00000000
+joint0_twoanchors | 0.87901433 | 0.48687130 | 0.93078156 | 0.57618291 | 0.55379902 | 0.88780637
+orth_lambda1 | 0.74776556 | 0.44730030 | 0.93619021 | 0.53759902 | 0.58100490 | 0.89445466
+oblique_lambda1 | 0.67188355 | 0.50277367 | 0.95841038 | 0.49569773 | 0.64028799 | 0.92487745
+各任务全部指标（相对误差/全部目标正确/全部非目标保持/完整目标状态检索），含anchor敏感性与排除主口径并列：
+no_edit | position | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | background | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | background | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+color | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+color | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+background | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | position+background | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color+background | all_edits_sensitivity | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+no_edit | color+background | anchor_excluded_primary | 1.00000000 | 0.00000000 | 1.00000000 | 0.00000000
+joint0_twoanchors | position | all_edits_sensitivity | 0.49144514 | 0.79560909 | 0.98267506 | 0.77897135
+joint0_twoanchors | position | anchor_excluded_primary | 0.50799855 | 0.77713572 | 0.98118528 | 0.75896820
+joint0_twoanchors | color | all_edits_sensitivity | 1.46654181 | 0.46375868 | 0.99985532 | 0.46361400
+joint0_twoanchors | color | anchor_excluded_primary | 1.50589057 | 0.48687130 | 0.99981509 | 0.48668639
+joint0_twoanchors | background | all_edits_sensitivity | 0.60532693 | 0.47518808 | 0.79571759 | 0.31275318
+joint0_twoanchors | background | anchor_excluded_primary | 0.62315386 | 0.46384985 | 0.81134430 | 0.31328587
+joint0_twoanchors | position+color | all_edits_sensitivity | 0.69848035 | 0.47909433 | 0.99775752 | 0.47692419
+joint0_twoanchors | position+color | anchor_excluded_primary | 0.71708409 | 0.49430147 | 0.99742647 | 0.49181985
+joint0_twoanchors | position+background | all_edits_sensitivity | 0.44935711 | 0.62051505 | 0.68576389 | 0.36993634
+joint0_twoanchors | position+background | anchor_excluded_primary | 0.47490781 | 0.60055147 | 0.71286765 | 0.37261029
+joint0_twoanchors | color+background | all_edits_sensitivity | 0.52408457 | 0.56416377 | 0.95312500 | 0.53204572
+joint0_twoanchors | color+background | anchor_excluded_primary | 0.53655681 | 0.56654412 | 0.95312500 | 0.53226103
+orth_lambda1 | position | all_edits_sensitivity | 0.49169705 | 0.80183015 | 0.98209635 | 0.78464988
+orth_lambda1 | position | anchor_excluded_primary | 0.50816087 | 0.78402367 | 0.98044564 | 0.76525518
+orth_lambda1 | color | all_edits_sensitivity | 1.10596784 | 0.41840278 | 1.00000000 | 0.41840278
+orth_lambda1 | color | anchor_excluded_primary | 1.12986701 | 0.44730030 | 1.00000000 | 0.44730030
+orth_lambda1 | background | all_edits_sensitivity | 0.58636094 | 0.55895544 | 0.81278935 | 0.40321181
+orth_lambda1 | background | anchor_excluded_primary | 0.60526879 | 0.54775333 | 0.82812500 | 0.40703587
+orth_lambda1 | position+color | all_edits_sensitivity | 0.60086878 | 0.51967593 | 0.99992766 | 0.51960359
+orth_lambda1 | position+color | anchor_excluded_primary | 0.61674048 | 0.53832721 | 0.99990809 | 0.53823529
+orth_lambda1 | position+background | all_edits_sensitivity | 0.43375949 | 0.67042824 | 0.70261863 | 0.43207465
+orth_lambda1 | position+background | anchor_excluded_primary | 0.45920622 | 0.65211397 | 0.72674632 | 0.43694853
+orth_lambda1 | color+background | all_edits_sensitivity | 0.52494419 | 0.55013021 | 0.95630787 | 0.52155671
+orth_lambda1 | color+background | anchor_excluded_primary | 0.53685035 | 0.55257353 | 0.95670956 | 0.52104779
+oblique_lambda1 | position | all_edits_sensitivity | 0.44153363 | 0.89152922 | 0.98368779 | 0.87539786
+oblique_lambda1 | position | anchor_excluded_primary | 0.45609351 | 0.88188794 | 0.98340422 | 0.86543084
+oblique_lambda1 | color | all_edits_sensitivity | 0.97598749 | 0.47706887 | 1.00000000 | 0.47706887
+oblique_lambda1 | color | anchor_excluded_primary | 0.99990826 | 0.50277367 | 1.00000000 | 0.50277367
+oblique_lambda1 | background | all_edits_sensitivity | 0.54115752 | 0.57826968 | 0.88129340 | 0.48433883
+oblique_lambda1 | background | anchor_excluded_primary | 0.55964887 | 0.56638314 | 0.89182692 | 0.48252589
+oblique_lambda1 | position+color | all_edits_sensitivity | 0.52063918 | 0.68272569 | 0.99971065 | 0.68243634
+oblique_lambda1 | position+color | anchor_excluded_primary | 0.53747091 | 0.68759191 | 0.99963235 | 0.68722426
+oblique_lambda1 | position+background | all_edits_sensitivity | 0.41250262 | 0.67100694 | 0.78262442 | 0.50730613
+oblique_lambda1 | position+background | anchor_excluded_primary | 0.43730481 | 0.65101103 | 0.79816176 | 0.50404412
+oblique_lambda1 | color+background | all_edits_sensitivity | 0.50060902 | 0.57559317 | 0.97663484 | 0.56011285
+oblique_lambda1 | color+background | anchor_excluded_primary | 0.51231748 | 0.58226103 | 0.97683824 | 0.56507353
+独立审计：每scene/task/model固定前7原5120维编辑，共10752项；误差maxabs=4.3565151486291143e-13，坐标解算预测maxabs=1.554312234475219e-14。完整edit tuple/mask、全部保存edit聚合及pair区间核验通过，CI maxabs=2.7755575615628914e-17。该审计不是逐个原空间复算所有编辑；全量指标归约与预定样本原空间复算区分报告。
+
+限制与执行边界：OOD仅背景stage_gray [.25,.50]相对ID [.55,.95]外推，物体/相机/编码器未更换。模型在旧数据上有监督训练；本批次无PCA或W拟合、无lambda/条件数扩展。cond=2边界与斜投影噪声代价来自已冻结模型，不能把本次收益泛化为完全因素独立。双因素组合、非目标保持和相对joint0均次指标，不能冒充四主比较校正家族。新数据现已查看，后续修改不得继续在同数据声称首次确认。root负责综合报告和归档。

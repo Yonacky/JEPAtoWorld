@@ -1,0 +1,43 @@
+{
+  "models": [
+    "no_edit",
+    "joint0_twoanchors",
+    "orth_lambda1",
+    "oblique_lambda1"
+  ],
+  "frozen_hashes": {
+    "models": "95416df9ac024d84010b5589cd89c2ffd45a55779f8f2b400f45eaec11f2c854",
+    "joint0": "db0ab731050521e3e928af1c09e942654a73169a70d97ecd9a13b9953e027d6c",
+    "selection": "bbde9a784845a1d3f80316681d24df46c924f84262885facbf6cb2278a862f69"
+  },
+  "bootstrap_seed": 20261013,
+  "bootstrap_draws": 10000,
+  "expected_production_scenes": 64,
+  "anchor_codes": [
+    0,
+    26
+  ],
+  "anchor_filter": "exclude a OR d OR true target equals 000/222; retrieval remains all27",
+  "single_factor": "target changes and at least one nontarget differs",
+  "double_factor": "both targets change AND remaining nontarget differs",
+  "primary_family": "ID/OOD times single-factor macro error / single-color target recovery; oblique_lambda1 minus orth_lambda1",
+  "adjusted_interval_quantiles": [
+    0.00625,
+    0.99375
+  ],
+  "old_alignment_data_sha256": "10256d4c36db94d5627cca129c44ba9804078ba630da0761a24489e19738a2a3",
+  "encoder_contract": {
+    "checkpoint_sha256": "ad6c1f6e318ace5633bea4496bc5c76248f6dc59c9a0d8a010cf31ed9dee2da8",
+    "precision": "FP32, TF32 disabled",
+    "resize": "224 square bilinear antialias=True align_corners=False",
+    "normalization": "RGB (x/255 - .5)/.5",
+    "grid_layout": "channel-major: N,1280,2,2 flattened to N,5120; cells TL,TR,BL,BR",
+    "pooling": "mean over 256 tokens and adaptive average pooling 16x16 token map to 2x2",
+    "vendor_source_sha256": "753dad4d37dd00fe5948eaabc2a01a1a6ed0c10f3ddf813d8c1b0dc4eb028814"
+  },
+  "target_names": [
+    "object_x",
+    "object_green",
+    "floor_tint"
+  ]
+}

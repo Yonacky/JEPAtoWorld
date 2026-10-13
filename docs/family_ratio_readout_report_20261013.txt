@@ -1,0 +1,20 @@
+G-7c跨编码器冻结标量读出入口，2026-10-13
+
+已完成scripts/family_ratio_readout.py，fork历史contact_ratio_readout_20261013.py，未修改历史脚本或论文。默认input_kind=image_g5j，读取features.npz的grid(N,D)，D任意正数；仍固定6480帧/40scene/每scene18branch/9时刻。按dataset构造各模式grid concat(z30-z0,z120-z0)，24/8/8固定scene互斥，每mode三个目标ratio/mass/force，共六模型；train中心化未白化PCA最多32维、原5alpha仅tune scene等权MSE选择，独立SVD复算相同alpha与预测。known-force只做历史代数诊断，不增加模型。
+
+映射：默认同目录sample_manifest.npz，或--dataset-manifest显式NPZ。image模式必须split/episode/frame/labels逐值一致；scene/contact_mode/mass_level/force_level若提供也必须逐值一致。每scene81帧/模式、每物理格唯一episode、九帧顺序和物理标签三值核验。任意D不意味着原始容量相等，配置记录原维数和输入kind；输出PCA实际秩、各目标选中alpha/五tune损失、sceneMSE、全部预测真值和索引，input/source/script hashes保留。
+
+后续branch_vector接口：features.npz内键branch_vector，必须720行×D；显式--input-kind branch_vector、--dataset-manifest和--window-spec。branch manifest至少scene/contact_mode/mass_level/force_level/split，按四元唯一键匹配原dataset每branch，不依赖顺序。若labels/episode提供也核验。window JSON必须task=retrospective_readout、sample_steps、pooling、encoder_id；单vector整个声明窗口是不可分割输入，不将其伪称双差分或按token索引断言无未来泄漏。当前只通过合成branch接口核验，真实视频编码/窗口内容由生产提取器额外审计，本脚本无法从vector反推实际送入帧。不同窗口必须独立结果目录，不共用比较结论。
+
+CPU核验：scripts/test_family_ratio_readout.py以真实metadata骨架+固定随机合成特征分别测试D7、D19，六目标完整PCA/岭均通过；D7允许PCA实际秩最多14，证明没有硬编码32输入秩。破坏image manifest frame被拒绝。branch_vector D9合法显式映射与窗口通过。合成数据仅接口测试，不是编码器科学结果。
+
+唯一原I-JEPA对齐运行：runs/family_ratio_readout_validation_20261013/ijepa_alignment。六模型与历史G5j逐值对齐，包括预测、真值、scene、全部train/tune/dev源索引、系数、alpha、目标尺度及tune损失；results.json解析内容完全相同，预测最大差0。未做新搜索。OFF ratio R² .6738365941832598、ON .13981933703576344均仅重复旧值。
+
+CLI image：python scripts/family_ratio_readout.py --data <dataset.npz> --features <features.npz> --output <new_directory>
+CLI branch：追加 --input-kind branch_vector --dataset-manifest <dataset_manifest.npz> --window-spec <window.json>
+依赖numpy/scipy和标准库，CPU线程固定2，无GPU。输出目录必须不存在，避免覆盖历史。图像模型真实新特征由root提取；旧40scene后续实验仍是旧dev探索，不称新确认，不作预训练公平排行榜。
+
+修订记录（2026-10-13）：修正一行if误将三份生产metadata哈希收集限制在window_spec分支的问题。extend现无条件执行；只执行真实main的source-list AST，image及windowed两模式均收集config/scene_metadata/validation，未重跑模型。已运行旧源码SHA 340db72b3d1b88d5a735435b729d2001d695d5f1ebd4edd865aec980c850d546保存在source_snapshots/family_ratio_readout_executed_340db72b.py；历史run config不改。当前源码SHA cb584509aa4dd0cc56c816daa87b55596fa76cd5d4600eb5d8711738cc55fa3a，轻量核验见metadata_hash_fix_20261013.json。
+
+均匀视频源修订（2026-10-13）：此前branch接口仅合成九帧metadata join，不接受真实11520帧，现已修复。image仍保留6480/旧九时刻；branch依据独立window-spec支持720×窗口帧数，必须source_rows完整分割原dataset所有行、clip_frames逐值匹配声明sample_steps，scene/contact_mode/mass/force/split/episode/labels及time_seconds逐项核对。保存PCA时另附dataset_source_indices；branch model源索引仍指feature行，不混作dataset行。实际16帧宣告由root冻结[0,8,...120]，不自动推断。
+新增scripts/test_family_ratio_uniform.py：反序720branch manifest与11520行16帧合成源通过；重复/错位source_rows和错误clip_frames被拒绝；旧D7image六模型所有保存字段逐值不变。未重跑真实IJEPA。证据runs/family_ratio_readout_uniform_validation_20261013/validation.json。前版源码及测试脚本保留source_snapshots，历史run config未改。旧合成branch例的测试源码同步显式source_rows/clip_frames契约，历史输出不覆写。

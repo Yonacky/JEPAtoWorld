@@ -1,0 +1,17 @@
+{
+  "scope": "Supervised matched edit optimization, reused ID/OOD exploration; not ICA or unsupervised",
+  "steps": 200,
+  "weights": [
+    0,
+    1
+  ],
+  "condition_cap": 2,
+  "selection": "tune edit error+cross factor leakage; all candidates reported",
+  "input_hashes": {
+    "runs\\intervention_20261012\\pilot\\dataset.npz": "63f5b46a8e067de875ca4813f0d7a2d325e2e998dc53c09bb211be7cebb248a7",
+    "runs\\intervention_20261012\\features\\features.npz": "a5b49a005c5ba71b06c81cac5e77b9e894345b09bc28bc168f393e0e91ceae99",
+    "runs\\intervention_20261012\\step2b\\fitted.npz": "db0ab731050521e3e928af1c09e942654a73169a70d97ecd9a13b9953e027d6c",
+    "F:\\2610\\CVPR27\\scripts\\nonorthogonal_edit_20261013.py": "518cb1a2caa4dac5e3e5ef1e9f4abc1ac1b34b54e5f37b55350525bd2f2eef49",
+    "F:\\2610\\CVPR27\\scripts\\fit_target_supervised_reference_20261012.py": "70d486d6e76e6cf0a59bbad259ee8439c0a60715cbf162aa2edc28409facc0e6"
+  }
+}

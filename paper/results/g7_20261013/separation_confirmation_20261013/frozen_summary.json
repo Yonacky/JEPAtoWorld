@@ -1,0 +1,184 @@
+{
+  "scope": "new static scenes; frozen supervised models; nearest-reference metrics not rendered/control success",
+  "domains": {
+    "id": {
+      "rows": [
+        {
+          "model": "no_edit",
+          "single_macro_error": 1.0,
+          "color_target_recovery": 0.0,
+          "single_macro_nontarget_preservation": 1.0,
+          "joint_macro_error": 1.0,
+          "joint_macro_target_recovery": 0.0,
+          "joint_macro_nontarget_preservation": 1.0
+        },
+        {
+          "model": "joint0_twoanchors",
+          "single_macro_error": 0.478417789941959,
+          "color_target_recovery": 0.7409393491124258,
+          "single_macro_nontarget_preservation": 0.9718626725838263,
+          "joint_macro_error": 0.30786524839584595,
+          "joint_macro_target_recovery": 0.8909007352941177,
+          "joint_macro_nontarget_preservation": 0.9435355392156861
+        },
+        {
+          "model": "orth_lambda1",
+          "single_macro_error": 0.44112057897284457,
+          "color_target_recovery": 0.7104289940828403,
+          "single_macro_nontarget_preservation": 0.9737271942800788,
+          "joint_macro_error": 0.3009480975731383,
+          "joint_macro_target_recovery": 0.902113970588235,
+          "joint_macro_nontarget_preservation": 0.9419730392156861
+        },
+        {
+          "model": "oblique_lambda1",
+          "single_macro_error": 0.4044665837983313,
+          "color_target_recovery": 0.8316383136094677,
+          "single_macro_nontarget_preservation": 0.9761926775147928,
+          "joint_macro_error": 0.2812794471885895,
+          "joint_macro_target_recovery": 0.9224571078431372,
+          "joint_macro_nontarget_preservation": 0.9516544117647058
+        }
+      ],
+      "primary_names": [
+        "single_factor_macro_relative_error_anchor_excluded",
+        "single_color_target_recovery_anchor_excluded"
+      ],
+      "difference_oblique_minus_orth": [
+        -0.03665399517451333,
+        0.12120931952662722
+      ],
+      "ci98_75": [
+        [
+          -0.03977358001949541,
+          0.10981387527736684
+        ],
+        [
+          -0.03374232669139889,
+          0.13320572531434915
+        ]
+      ],
+      "error_interval_below_zero": true,
+      "color_recovery_interval_above_zero": true,
+      "data_audit": "PASS_SAVED_DATA_AUDIT",
+      "independent_evaluation_audit": {
+        "status": "PASS",
+        "independent_pairs": 32,
+        "fullspace_sample_edits": 10752,
+        "fullspace_maxabs": 2.8843594179761567e-13,
+        "prediction_coordinate_solve_maxabs": 1.509903313490213e-14,
+        "all_saved_edit_reductions": true,
+        "bonferroni_quantiles": [
+          0.00625,
+          0.99375
+        ],
+        "ci_maxabs": 1.3877787807814457e-17,
+        "scope": "fullspace first7 of EVERY scene/task/model; all saved edits aggregation, full tuple masks and pair bootstrap; no fitting",
+        "source_hashes": {
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/id_data/dataset.npz": "ca706e769b3bdc871252331184357afee35d50593e4029764d886867e087dab8",
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/id_features/features.npz": "e032d27131a660f3dce7d7890ac01eb190afe78d01bbfe9c964f7604d022f085",
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/id_features/features.json": "2b0e1e8462ba9b438b296600345033a35b3569990fcec42027c305e85c861a64",
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/id_features/sample_manifest.npz": "b188709d24fd93d79732cddc68fc77a756a8d1c9a17616e0f7a9ef2cd0537540",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/models.npz": "95416df9ac024d84010b5589cd89c2ffd45a55779f8f2b400f45eaec11f2c854",
+          "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/step2b/fitted.npz": "db0ab731050521e3e928af1c09e942654a73169a70d97ecd9a13b9953e027d6c",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/selection.json": "bbde9a784845a1d3f80316681d24df46c924f84262885facbf6cb2278a862f69",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/frozen_config.json": "5fe9242cb49561aaa2a18f395113131fe01a5617fb0c91d5ec2d5c126d8349f4",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/evaluate_frozen_oblique_20261013.py": "980560f508a8232e4548a5e17f42431690c80c3236a633cf9350d59042c724c4"
+        },
+        "audit_script_sha256": "0ad54a4bea3d874dd930f31857b414dd2077f603208f3eebbfe0b35e520144b6"
+      },
+      "scene_count": 64,
+      "independent_pairs": 32
+    },
+    "ood": {
+      "rows": [
+        {
+          "model": "no_edit",
+          "single_macro_error": 1.0,
+          "color_target_recovery": 0.0,
+          "single_macro_nontarget_preservation": 1.0,
+          "joint_macro_error": 1.0,
+          "joint_macro_target_recovery": 0.0,
+          "joint_macro_nontarget_preservation": 1.0
+        },
+        {
+          "model": "joint0_twoanchors",
+          "single_macro_error": 0.879014325813173,
+          "color_target_recovery": 0.48687130177514787,
+          "single_macro_nontarget_preservation": 0.9307815581854042,
+          "joint_macro_error": 0.5761829060820634,
+          "joint_macro_target_recovery": 0.5537990196078432,
+          "joint_macro_nontarget_preservation": 0.8878063725490195
+        },
+        {
+          "model": "orth_lambda1",
+          "single_macro_error": 0.7477655557478049,
+          "color_target_recovery": 0.4473002958579882,
+          "single_macro_nontarget_preservation": 0.9361902120315581,
+          "joint_macro_error": 0.5375990157838209,
+          "joint_macro_target_recovery": 0.5810049019607844,
+          "joint_macro_nontarget_preservation": 0.8944546568627451
+        },
+        {
+          "model": "oblique_lambda1",
+          "single_macro_error": 0.6718835468213199,
+          "color_target_recovery": 0.5027736686390533,
+          "single_macro_nontarget_preservation": 0.9584103796844179,
+          "joint_macro_error": 0.49569773276173335,
+          "joint_macro_target_recovery": 0.6402879901960783,
+          "joint_macro_nontarget_preservation": 0.9248774509803921
+        }
+      ],
+      "primary_names": [
+        "single_factor_macro_relative_error_anchor_excluded",
+        "single_color_target_recovery_anchor_excluded"
+      ],
+      "difference_oblique_minus_orth": [
+        -0.0758820089264849,
+        0.055473372781065095
+      ],
+      "ci98_75": [
+        [
+          -0.08729004332246462,
+          0.039802144970414205
+        ],
+        [
+          -0.06574449558747246,
+          0.07273974898298817
+        ]
+      ],
+      "error_interval_below_zero": true,
+      "color_recovery_interval_above_zero": true,
+      "data_audit": "PASS_SAVED_DATA_AUDIT",
+      "independent_evaluation_audit": {
+        "status": "PASS",
+        "independent_pairs": 32,
+        "fullspace_sample_edits": 10752,
+        "fullspace_maxabs": 4.3565151486291143e-13,
+        "prediction_coordinate_solve_maxabs": 1.554312234475219e-14,
+        "all_saved_edit_reductions": true,
+        "bonferroni_quantiles": [
+          0.00625,
+          0.99375
+        ],
+        "ci_maxabs": 2.7755575615628914e-17,
+        "scope": "fullspace first7 of EVERY scene/task/model; all saved edits aggregation, full tuple masks and pair bootstrap; no fitting",
+        "source_hashes": {
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_data/dataset.npz": "6080292573e04b973430ef7a8fa80557b1d8646cae75c74d51467220aa7e2d0b",
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_features/features.npz": "c2b8592802bb9c209db61f44370271944af56c6a475c8635d3db930eb80cd8f9",
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_features/features.json": "e5a209ed63c8919a1554fdc0c6b891d4728db285060dde6d20d035354b31b71b",
+          "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_features/sample_manifest.npz": "b188709d24fd93d79732cddc68fc77a756a8d1c9a17616e0f7a9ef2cd0537540",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/models.npz": "95416df9ac024d84010b5589cd89c2ffd45a55779f8f2b400f45eaec11f2c854",
+          "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/step2b/fitted.npz": "db0ab731050521e3e928af1c09e942654a73169a70d97ecd9a13b9953e027d6c",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/selection.json": "bbde9a784845a1d3f80316681d24df46c924f84262885facbf6cb2278a862f69",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/frozen_config.json": "5fe9242cb49561aaa2a18f395113131fe01a5617fb0c91d5ec2d5c126d8349f4",
+          "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/evaluate_frozen_oblique_20261013.py": "980560f508a8232e4548a5e17f42431690c80c3236a633cf9350d59042c724c4"
+        },
+        "audit_script_sha256": "0ad54a4bea3d874dd930f31857b414dd2077f603208f3eebbfe0b35e520144b6"
+      },
+      "scene_count": 64,
+      "independent_pairs": 32
+    }
+  },
+  "all_four_predeclared_intervals_in_improving_direction": true
+}

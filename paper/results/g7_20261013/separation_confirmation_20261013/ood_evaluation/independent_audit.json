@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "independent_pairs": 32,
+  "fullspace_sample_edits": 10752,
+  "fullspace_maxabs": 4.3565151486291143e-13,
+  "prediction_coordinate_solve_maxabs": 1.554312234475219e-14,
+  "all_saved_edit_reductions": true,
+  "bonferroni_quantiles": [
+    0.00625,
+    0.99375
+  ],
+  "ci_maxabs": 2.7755575615628914e-17,
+  "scope": "fullspace first7 of EVERY scene/task/model; all saved edits aggregation, full tuple masks and pair bootstrap; no fitting",
+  "source_hashes": {
+    "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_data/dataset.npz": "6080292573e04b973430ef7a8fa80557b1d8646cae75c74d51467220aa7e2d0b",
+    "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_features/features.npz": "c2b8592802bb9c209db61f44370271944af56c6a475c8635d3db930eb80cd8f9",
+    "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_features/features.json": "e5a209ed63c8919a1554fdc0c6b891d4728db285060dde6d20d035354b31b71b",
+    "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_features/sample_manifest.npz": "b188709d24fd93d79732cddc68fc77a756a8d1c9a17616e0f7a9ef2cd0537540",
+    "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/models.npz": "95416df9ac024d84010b5589cd89c2ffd45a55779f8f2b400f45eaec11f2c854",
+    "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/step2b/fitted.npz": "db0ab731050521e3e928af1c09e942654a73169a70d97ecd9a13b9953e027d6c",
+    "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/selection.json": "bbde9a784845a1d3f80316681d24df46c924f84262885facbf6cb2278a862f69",
+    "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/frozen_config.json": "5fe9242cb49561aaa2a18f395113131fe01a5617fb0c91d5ec2d5c126d8349f4",
+    "/home/kemove/datasets/jepa_factor_study/experiments/jepa_family_20261013/evaluate_frozen_oblique_20261013.py": "980560f508a8232e4548a5e17f42431690c80c3236a633cf9350d59042c724c4"
+  },
+  "audit_script_sha256": "0ad54a4bea3d874dd930f31857b414dd2077f603208f3eebbfe0b35e520144b6"
+}

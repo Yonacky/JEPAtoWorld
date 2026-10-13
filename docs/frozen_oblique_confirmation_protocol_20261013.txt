@@ -1,0 +1,13 @@
+G-7i-eval 实现冻结说明（2026-10-13）
+
+唯一上位科学协议：docs/nonorthogonal_newdata_protocol_20261013.md。本说明只固定接口及输出。四方法no_edit、joint0_twoanchors、orth_lambda1、oblique_lambda1；models/fitted/原selection前后hash核验。PCA64不重拟合，模型无优化入口。encoder checkpoint、vendor源码、预处理、pooling契约一致；图像hash、sample_manifest episode/frame/labels/split/target_names逐值和features文件hash核验。
+
+单因素改变目标code且至少一个非目标code冲突；双因素两目标code均改、唯一非目标code冲突。真实target保留recipient非目标、复制donor目标。编辑使用相应一个或两个P块之和，两参照000/222估计场景offset。主表排除recipient起点、donor或真实target任一为000/222，含anchor全量另列。检索库始终完整27状态。误差是原空间平方编辑误差除以recipient到真实target平方距离。每scene/task先平均，再单因素等权宏平均，再双向scene-pair平均。
+
+生产每域严格64scene，排序后i与i+32配对。ID/OOD各单因素宏误差和单因素颜色恢复构成四主contrast（oblique减orth）。10000次seed20261013 pair bootstrap，98.75%分位[.00625,.99375]；95%另描述。其余因素/组合/joint0参照均次指标。固定模型参数，不依据新结果更改定义。
+
+--old-alignment只接受冻结旧ID文件hash，选4scene=[0,1,16,17]形成2完整原pair；不得用于新生产确认。最终旧数据测试目录old_alignment_frozen。之前两版本源码保留为old_alignment_source.py及old_alignment_final_source.py，原配置old_alignment_frozen_config.json恢复字节与旧run_config所载hash逐值相符；未修改历史run_config。差异仅补selection前后hash、因素名/vendor锁、固定模型清单断言，未改变指标。
+
+输出scene_metrics.npz：metrics[4model,Nscene,6task,2mask,4metric]，counts[Nscene,6task,2mask]和scene。task=position/color/background/position+color/position+background/color+background；mask=all_edits_sensitivity/anchor_excluded_primary；metric=relative_error/all_target_correct/all_nontarget_preserved/exact_target_state。edit_records.npz的s{scene}_t{task}为[a,donor,target,anchor_keep]；edit_metrics.npz每model_s{scene}_t{task}为上述4逐编辑指标+nearest index。prediction_samples同key保存前7个64维预测delta。pair_map保存recipient/donor及dataset实际row索引。results.json含task全指标、主指标两种CI及次指标95CI。run_config保存参数、冻结配置及sourcehash，manifest记录输出hash。
+
+任意data/features路径可指定，但严格遵守上述契约；不支持重设模型、bootstrap次数或结构。CPU仅依赖Python/numpy。独立审计另由mainline_history执行。未读取新生产数据。

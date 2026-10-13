@@ -70,3 +70,23 @@
 | [DSREG_CODE] | DSReg作者[项目页](https://dsreg.github.io/)（由DSREG26原文链接）。 | DSREG26已提供理论和方法出处；本项目实际官方API/参数改写须另引本地[适配记录](../docs/intervention_step2b_step3a_report_20261012.txt)与对应代码hash。项目页地址在原文已确认，但本轮没有另核其仓库commit，不据它断言本地是最新版或完整复现。 |
 
 G5l连续目标依据另见[LEACE作者原文v4 §4.3](https://arxiv.org/html/2306.03819v4#S4.SS3)与[官方实现](https://github.com/EleutherAI/concept-erasure)。本地报告记录使用原解析公式与数值阈值，未沿用官方默认收缩等选项；方法引用与实现差别必须同时注明。此项实验状态更新于2026-10-13，旧文献登记中“未运行”状态由有限扩展完成替代，不升级为完整原论文复现。
+
+## G-7 模型家族补充（2026-10-13）
+
+| 稳定ID | 原始出处与身份 | 贡献、边界及本项目关系 |
+|---|---|---|
+| [LEJEPA25] | Randall Balestriero、Yann LeCun，*LeJEPA: Provable and Scalable Self-Supervised Learning Without the Heuristics*，2025，arXiv:2511.08544。[论文](https://arxiv.org/abs/2511.08544)；[作者官方仓库](https://github.com/galilai-group/lejepa)。 | 高斯各向同性正则与不变性目标的JEPA路线；不能据此推断任意checkpoint和池化输出满足DSReg全部识别条件。本轮核对论文身份、官方实现与权重发布缺口；未找到可核验原作者权重，因此后续敏感性结果须引OKAI_LEJEPA_ARTIFACT，不能记为原作者checkpoint复现。 |
+| [OKAI_LEJEPA_ARTIFACT] | OpenKnowledge AI / OK-AI，*lejepa-vitb16-pretrain-in1k*，第三方模型制品，固定revision 5dd71e2fc9a8e97d84c047f3a8cd5bf19ff199fa。[固定文件版本](https://huggingface.co/OK-AI/lejepa-vitb16-pretrain-in1k/tree/5dd71e2fc9a8e97d84c047f3a8cd5bf19ff199fa)；[训练源码](https://github.com/Open-Knowledge-AI/lite_ssl/tree/6ad846c891f644f09a255dd75c8ada6fb7247057)。 | 明确第三方300epoch IN1K ViT-B/16复现，不是同行评审理论证据或原作者权重。卡片Apache2.0与部分附带源码不同许可头分别保留。已核验架构、预处理、单独训练投影调用；代码仅严格加载encoder并显式排除6个projector tensors。可引用的论断是本实验制品来源与接口，不是其性能/解耦保证。详细[审计](../docs/lejepa_adapter_audit_20261013.md)；真实权重strict及输出烟测由根记录。 |
+
+
+## 分离构造批次补充（2026-10-13）
+
+| 稳定ID与原始出处 | 本项目使用与边界 |
+|---|---|
+| [NOJD04] Ziehe等，A Fast Algorithm for Joint Diagonalization with Non-orthogonal Transformations and its Application to Blind Source Separation，JMLR 5:777–800，2004。[原文](https://www.jmlr.org/papers/v5/ziehe04a.html) | 非正交解混及可逆性方向参照。G7g实际采用有界相似变换斜投影和监督编辑目标，不是该算法复现，也不继承盲源识别保证。 |
+| [JACOBI96] Cardoso、Souloumiac，Jacobi Angles for Simultaneous Diagonalization，SIAM J. Matrix Anal. Appl.17(1):161–164，1996。[原文](https://epubs.siam.org/doi/10.1137/S0895479893259546) | 正交联合对角化背景；本轮同目标正交控制不实现其Jacobi更新，不能当算法优劣比较。 |
+| [NADARAYA64] Nadaraya，On Estimating Regression，Theory of Probability and Its Applications9(1):141–142，1964。[原文](https://epubs.siam.org/doi/10.1137/1109020) | G7h高斯核加权条件chart来自经典核平滑；固定带宽没有最优性证明。 |
+| [VDM12] Singer、Wu，Vector Diffusion Maps and the Connection Laplacian。[作者稿](https://arxiv.org/abs/1102.0075) | 局部向量场及对齐问题参照；G7h未实现向量扩散或连接拉普拉斯，不主张流形一致性。 |
+| [RIEMANN18] Shao、Kumar、Fletcher，The Riemannian Geometry of Deep Generative Models。[作者稿](https://arxiv.org/abs/1711.08014) | 几何输运及类比参照；本项目没有生成解码器/pullback度量，局部chart映射不是黎曼平行输运。 |
+
+对应机制核对：[非正交出处](../docs/nonorthogonal_edit_sources_20261013.txt)、[局部坐标出处](../docs/local_chart_transport_literature_20261013.md)。正交ANOVA、核回归和斜投影均有既有数学基础，实验增量需由JEPA真实干预结果和与旧方法的具体差异支撑，不以名称宣称原创。

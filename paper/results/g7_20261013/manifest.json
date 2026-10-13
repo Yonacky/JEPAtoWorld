@@ -1,0 +1,102 @@
+{
+  "frozen_oblique_entry_20261013\\FREEZE.json": {
+    "source": "runs/frozen_oblique_entry_20261013/FREEZE.json",
+    "sha256": "bc389420b19f6aa68747f2e4a0455776800e4cf604ad9e549c8d1f2bb23002e9",
+    "bytes": 951
+  },
+  "frozen_oblique_entry_20261013\\frozen_config.json": {
+    "source": "runs/frozen_oblique_entry_20261013/frozen_config.json",
+    "sha256": "5fe9242cb49561aaa2a18f395113131fe01a5617fb0c91d5ec2d5c126d8349f4",
+    "bytes": 1712
+  },
+  "nonorthogonal_edit_20261013\\config.json": {
+    "source": "runs/nonorthogonal_edit_20261013/config.json",
+    "sha256": "0f568ccd0101aaa56849cb159fe591fbf235e0c17aee0d8c47c61c8ba864a304",
+    "bytes": 948
+  },
+  "nonorthogonal_edit_20261013\\selection.json": {
+    "source": "runs/nonorthogonal_edit_20261013/selection.json",
+    "sha256": "bbde9a784845a1d3f80316681d24df46c924f84262885facbf6cb2278a862f69",
+    "bytes": 63
+  },
+  "nonorthogonal_edit_20261013\\invariants.json": {
+    "source": "runs/nonorthogonal_edit_20261013/invariants.json",
+    "sha256": "fb1ee98d0830959748d5361550735161163b350067a3824d87e7dac07abda8c6",
+    "bytes": 2861
+  },
+  "nonorthogonal_edit_20261013\\results.json": {
+    "source": "runs/nonorthogonal_edit_20261013/results.json",
+    "sha256": "4501a4e2f85cc1c000aea05d87e7a0d43e024d2a3b642f5b257dafb299984ec9",
+    "bytes": 21608
+  },
+  "nonorthogonal_edit_20261013\\independent_validation.json": {
+    "source": "runs/nonorthogonal_edit_20261013/independent_validation.json",
+    "sha256": "3b8b9e9cd6aa7c2541f8dca2bc5b7423fd3f4433fd9fe70aafc98ae6173e444e",
+    "bytes": 8647
+  },
+  "separation_confirmation_20261013\\frozen_summary.json": {
+    "source": "runs/separation_confirmation_20261013/frozen_summary.json",
+    "sha256": "113be75b4644026b7fc48c64682b5c197e8b9e8078f66144071f16730b962e92",
+    "bytes": 9399
+  },
+  "separation_confirmation_20261013\\id_evaluation\\results.json": {
+    "source": "runs/separation_confirmation_20261013/id_evaluation/results.json",
+    "sha256": "de23a3309cc382b40ea2adba8eba3fd5c261f0c1775ac3de7a7d09e764c19778",
+    "bytes": 21347
+  },
+  "separation_confirmation_20261013\\id_evaluation\\run_config.json": {
+    "source": "runs/separation_confirmation_20261013/id_evaluation/run_config.json",
+    "sha256": "c512d94c56c0f51436804f2c2d38143da94805622787c9fccf0bae598f6a47ae",
+    "bytes": 4323
+  },
+  "separation_confirmation_20261013\\id_evaluation\\independent_audit.json": {
+    "source": "runs/separation_confirmation_20261013/id_evaluation/independent_audit.json",
+    "sha256": "feeab8dfa8066a9be1df84e370480eeb28eaa68d6e9604d8b6ca55450aeb283c",
+    "bytes": 2163
+  },
+  "separation_confirmation_20261013\\id_independent_audit\\validation.json": {
+    "source": "runs/separation_confirmation_20261013/id_independent_audit/validation.json",
+    "sha256": "7b8668c8102aec753ef66b8842c1b9cc02412385575a3dd58484871083837fb1",
+    "bytes": 3617
+  },
+  "separation_confirmation_20261013\\id_features\\features.json": {
+    "source": "runs/separation_confirmation_20261013/id_features/features.json",
+    "sha256": "2b0e1e8462ba9b438b296600345033a35b3569990fcec42027c305e85c861a64",
+    "bytes": 4285
+  },
+  "separation_confirmation_20261013\\id_data\\config_before_render.json": {
+    "source": "runs/separation_confirmation_20261013/id_data/config_before_render.json",
+    "sha256": "70475551f2027cb9e609f88bed455f6794994e255be903b8bfb52d4cb4dfef2e",
+    "bytes": 1255
+  },
+  "separation_confirmation_20261013\\ood_evaluation\\results.json": {
+    "source": "runs/separation_confirmation_20261013/ood_evaluation/results.json",
+    "sha256": "326e1c7ce2e1da3dd0fbfdba68d5e34ea3950cdf38b9bd17579a93addb60ce65",
+    "bytes": 21701
+  },
+  "separation_confirmation_20261013\\ood_evaluation\\run_config.json": {
+    "source": "runs/separation_confirmation_20261013/ood_evaluation/run_config.json",
+    "sha256": "e29baf249632e708cf799a2395e01aa97152bb1686fcb7fdced52a1a2ccc3cf8",
+    "bytes": 4331
+  },
+  "separation_confirmation_20261013\\ood_evaluation\\independent_audit.json": {
+    "source": "runs/separation_confirmation_20261013/ood_evaluation/independent_audit.json",
+    "sha256": "5e6a8562691414549f5735eaa4423a12e4d298e34a7d306dc4fdbb430b2689da",
+    "bytes": 2167
+  },
+  "separation_confirmation_20261013\\ood_independent_audit\\validation.json": {
+    "source": "runs/separation_confirmation_20261013/ood_independent_audit/validation.json",
+    "sha256": "ca5af823c59c28b578386c3b4dbc39d30f2cbb05c6445ab3ce5d9e715bb09871",
+    "bytes": 3613
+  },
+  "separation_confirmation_20261013\\ood_features\\features.json": {
+    "source": "runs/separation_confirmation_20261013/ood_features/features.json",
+    "sha256": "e5a209ed63c8919a1554fdc0c6b891d4728db285060dde6d20d035354b31b71b",
+    "bytes": 4285
+  },
+  "separation_confirmation_20261013\\ood_data\\config_before_render.json": {
+    "source": "runs/separation_confirmation_20261013/ood_data/config_before_render.json",
+    "sha256": "8708bbdc7fd8137fd5bfe9f63013a44bfacc46a25048d778c784d0e090d398bd",
+    "bytes": 1255
+  }
+}

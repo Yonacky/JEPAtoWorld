@@ -1,0 +1,11 @@
+"""CPU interface checks, not scientific encoder experiments."""
+from pathlib import Path
+import subprocess,sys,json,numpy as np
+O=Path('runs/family_ratio_readout_validation_20261013');O.mkdir(exist_ok=True);z=np.load('runs/intervention_20261012/contact_paired_production_20261013/dataset.npz');keys=['scene','contact_mode','split','episode','frame','mass_level','force_level','labels'];md={k:z[k] for k in keys};np.savez_compressed(O/'dataset.npz',**md);rng=np.random.default_rng(20261013);checks=[]
+def run(folder,extra=(),ok=True):
+ cmd=[sys.executable,'scripts/family_ratio_readout.py','--data',str(O/'dataset.npz'),'--features',str(folder/'features.npz'),'--output',str(folder/'readout'),*extra];r=subprocess.run(cmd,capture_output=True,text=True);(folder/'run.log').write_text(r.stdout+r.stderr);assert (r.returncode==0)==ok,(cmd,r.stderr);checks.append({'case':folder.name,'expected_success':ok,'exit_code':r.returncode})
+for dim in [7,19]:
+ p=O/f'image_d{dim}';p.mkdir(exist_ok=True);np.savez_compressed(p/'sample_manifest.npz',**md);A=rng.normal(size=(6480,dim)).astype('float32');np.savez_compressed(p/'features.npz',grid=A);run(p);assert len(json.loads((p/'readout/results.json').read_text()))==6
+p=O/'bad_image_manifest';p.mkdir(exist_ok=True);np.savez_compressed(p/'features.npz',grid=A);bad={k:v.copy() for k,v in md.items()};bad['frame'][0]=999;np.savez_compressed(p/'sample_manifest.npz',**bad);run(p,ok=False)
+p=O/'branch_d9';p.mkdir(exist_ok=True);ix=np.flatnonzero(md['frame']==0);bm={k:md[k][ix] for k in keys};bm.update(source_rows=np.arange(6480).reshape(720,9),clip_frames=md['frame'].reshape(720,9));np.savez_compressed(p/'dataset_manifest.npz',**bm);np.savez_compressed(p/'features.npz',branch_vector=rng.normal(size=(720,9)));(p/'window.json').write_text(json.dumps({'task':'retrospective_readout','sample_steps':[0,1,5,10,20,30,60,90,120],'pooling':'synthetic','encoder_id':'synthetic_fixture'}));run(p,['--input-kind','branch_vector','--dataset-manifest',str(p/'dataset_manifest.npz'),'--window-spec',str(p/'window.json')]);assert len(json.loads((p/'readout/results.json').read_text()))==6
+(O/'fixture_validation.json').write_text(json.dumps({'status':'PASS','not_scientific_results':True,'checks':checks},indent=2));print(checks)

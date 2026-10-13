@@ -3,3 +3,39 @@
 *.json text eol=lf
 *.md text eol=lf
 *.txt text eol=lf
+
+# Preserve published audit bytes and frozen experiment source hashes.
+paper/results/g7_20261013/** -text
+core/static_confirmation/*.py -text
+scripts/audit_family_anova_blocks_20261013.py -text
+scripts/audit_frozen_oblique_confirmation_20261013.py -text
+scripts/continue_family_video_pipeline_20261013.py -text
+scripts/evaluate_frozen_oblique_20261013.py -text
+scripts/extract_family_images_20261013.py -text
+scripts/family_anova_blocks_20261013.py -text
+scripts/family_ijepa_video_baseline.py -text
+scripts/family_image_adapter.py -text
+scripts/family_leace_observable.py -text
+scripts/family_observable_direction.py -text
+scripts/family_provenance.py -text
+scripts/family_ratio_readout.py -text
+scripts/family_video_adapter.py -text
+scripts/finalize_nonorthogonal_edit_20261013.py -text
+scripts/finish_static_confirmation_20261013.py -text
+scripts/generate_family_uniform_video_20261013.py -text
+scripts/generate_static_confirmation_20261013.py -text
+scripts/local_chart_transport_20261013.py -text
+scripts/nonorthogonal_edit_20261013.py -text
+scripts/recover_ijepa_video_metadata_20261013.py -text
+scripts/report_nonorthogonal_edit_20261013.py -text
+scripts/run_family_video_pipeline_20261013.py -text
+scripts/run_static_confirmation_20261013.py -text
+scripts/summarize_static_confirmation_20261013.py -text
+scripts/test_family_ijepa_video_baseline.py -text
+scripts/test_family_ratio_readout.py -text
+scripts/test_family_ratio_uniform.py -text
+scripts/verify_family_diagnostics.py -text
+scripts/verify_family_uniform_video_20261013.py -text
+scripts/verify_local_chart_transport_20261013.py -text
+scripts/verify_nonorthogonal_edit_20261013.py -text
+scripts/verify_static_confirmation_20261013.py -text

@@ -1,0 +1,13 @@
+G-7i-eval 入口交付报告（2026-10-13）
+
+scripts/evaluate_frozen_oblique_20261013.py与runs/frozen_oblique_entry_20261013/frozen_config.json已完成旧数据数值对齐，不含训练/调参过程。上位协议及实现说明见docs/nonorthogonal_newdata_protocol_20261013.md、docs/frozen_oblique_confirmation_protocol_20261013.txt。
+
+最终旧数据测试old_alignment_frozen覆盖旧ID四scene、两完整pair、四固定模型、六编辑任务、两anchor口径。历史单因素误差最大差8.88e-16；前7编辑的原空间MSE最大差1.98e-13，27候选检索逐值一致。预定生产要求64scene/32pair，旧小样本bootstrap只用于实现验证，不能作为确认结果。
+
+推荐从F:/2610/CVPR27调用：
+C:/Users/lenovo/miniconda3/python.exe scripts/evaluate_frozen_oblique_20261013.py --data NEW_DATA/dataset.npz --features NEW_FEATURES/features.npz --models runs/nonorthogonal_edit_20261013/models.npz --joint0 runs/intervention_20261012/step2b/fitted.npz --selection runs/nonorthogonal_edit_20261013/selection.json --frozen-config runs/frozen_oblique_entry_20261013/frozen_config.json --output NEW_OUTPUT --domain id
+OOD相同，仅--domain ood并切换输入/输出。features同目录必须包含features.json及sample_manifest.npz。新生产不得带--old-alignment。
+
+所有主/次指标、两anchor口径及edit记录完整保存，独立审计可从models和rawfeatures重算；既有模型/U/selection哈希前后保持。第一次看新结果后不得继续称未见。本入口交付尚无新数据科学结果，未运行GPU，未push。
+
+最终独立审计已PASS（mainline_history，不调用eval函数）：672个原空间样本，预测差≤1.15e-14，误差差≤1.98e-13；全部edit聚合及pair区间最大差≤5.55e-17。证据old_alignment_frozen/independent_audit.json。源码SHA256=980560f508a8232e4548a5e17f42431690c80c3236a633cf9350d59042c724c4。

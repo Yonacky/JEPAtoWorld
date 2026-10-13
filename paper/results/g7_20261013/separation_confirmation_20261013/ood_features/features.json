@@ -1,0 +1,104 @@
+{
+  "prepared_sha256": "ee47f4158492444d4d037c9683e85806487270caed39ded446167c73a672b3f6",
+  "images_sha256": "a967eb4292d7c11c5f82a298f538f76941c86a3c242fe1ff3103c5ed55833431",
+  "images_shape": [
+    1728,
+    128,
+    128,
+    3
+  ],
+  "images_dtype": "uint8",
+  "checkpoint_sha256": "ad6c1f6e318ace5633bea4496bc5c76248f6dc59c9a0d8a010cf31ed9dee2da8",
+  "source_script_sha256": "24630778991c3aecb65bbc0a2740041c11d152781941f568a25c1cafac7364f7",
+  "device_utils_sha256": "858bcdc08ef4db4362fc9454739f566f01c9bff66eb3a7330904edb7dec41a2b",
+  "vendor_source_sha256": "753dad4d37dd00fe5948eaabc2a01a1a6ed0c10f3ddf813d8c1b0dc4eb028814",
+  "vendor_source_files": {
+    "src/datasets/imagenet1k.py": "41509bf7d154f10f6c233714b8a9e86a430333eca931f797119e08844f767f87",
+    "src/helper.py": "bd9854f2d4143ce82160b36af5ebd4d9f5462087c2afc7722168ccf20c4c9f06",
+    "src/masks/default.py": "1d38246d4bc3a4a359dded532bdb71f3a29b112dec888ba4bc9944deb506a3a2",
+    "src/masks/multiblock.py": "a06c593636f81e760bd26b615b2a7a976790dcc027d4b9244f3e8e7a2e5a8804",
+    "src/masks/random.py": "9b5f2e538b208b396e1811acddde352b76123d2b7f982277c9bc226d83333925",
+    "src/masks/utils.py": "124da04a7513329a14793389d89a98db87498caf7623a10bc772b097c74d97ec",
+    "src/models/vision_transformer.py": "69be453a6367460fd0c94588af6531c022a2469ff72e0a793c16fd110dd498c0",
+    "src/train.py": "6b5467b6663ace871ede718168b152d6759a2ec26b94bb688ae6e46c80e835aa",
+    "src/transforms.py": "441acaef22ca3bd121f98f95bfcad2b271ecacef0ab4ba72d4f3dc28c57fd44c",
+    "src/utils/distributed.py": "292eeb63ff515eec39603ff7170dedbfe87dab0eb204c3ad32fc767031da5210",
+    "src/utils/logging.py": "fc3c2417e33a49e728b56d1b811fb8047fc75e7b9f0074159d6ba84ad2366133",
+    "src/utils/schedulers.py": "0e26275a7fc43ee4ba1d77f39100dead7a9a7ae7f180b740e11b31143df77b6d",
+    "src/utils/tensors.py": "66cac858005d01e93ad6f481f384a9d75cb1fb8ad2bff0fd7e9a127f384429c0"
+  },
+  "manifest_hashes": {
+    "labels": {
+      "sha256": "462966e5929bb3423ed03eac9589cab1dc62aac798e48554bc1b18479d27c00b",
+      "shape": [
+        1728,
+        3
+      ],
+      "dtype": "float64"
+    },
+    "split": {
+      "sha256": "c001d984147d5083b1db226a083e50b34b1b0b1103e365ecef9c64472336097e",
+      "shape": [
+        1728
+      ],
+      "dtype": "int8"
+    },
+    "episode": {
+      "sha256": "fd63319aee04535c478eb896f5e848fcb7cf6278e1ed8eb754bb9d17a32357d0",
+      "shape": [
+        1728
+      ],
+      "dtype": "int64"
+    },
+    "frame": {
+      "sha256": "8ab75b4fe0babad25b476e5dfeae2a01c59bd5cb2e16e7a5e9c99bbef9d2cff1",
+      "shape": [
+        1728
+      ],
+      "dtype": "int64"
+    },
+    "episode_length": {
+      "sha256": "ca7039284bf727cde972c66665e440e4c363e908b9dda3642d0a514602df260a",
+      "shape": [
+        1728
+      ],
+      "dtype": "int64"
+    },
+    "target_names": {
+      "sha256": "cc232eaea2f8397c6e8e425f1777b645040b6d5bf7138bcfec4d19083a2e322b",
+      "shape": [
+        3
+      ],
+      "dtype": "<U12"
+    }
+  },
+  "image_orientation": "Prepared camera RGB bytes consumed unchanged; no flip or rotation",
+  "precision": "FP32, TF32 disabled",
+  "resize": "224 square bilinear antialias=True align_corners=False",
+  "normalization": "RGB (x/255 - .5)/.5",
+  "grid_layout": "channel-major: N,1280,2,2 flattened to N,5120; cells TL,TR,BL,BR",
+  "seed": 20261011,
+  "strict_load": true,
+  "all_checkpoint_keys_used": true,
+  "sdpa_attention_maxabs": 4.76837158203125e-07,
+  "sdpa_full_model_maxabs": 0.00017690658569335938,
+  "sdpa_full_atol_rtol": 0.0002,
+  "mean_grid_maxabs": 1.430511474609375e-06,
+  "mean_grid_atol_rtol": 2e-05,
+  "pooling": "mean over 256 tokens and adaptive average pooling 16x16 token map to 2x2",
+  "extraction_device": {
+    "selected_device": "cuda:0",
+    "CUDA_VISIBLE_DEVICES": "GPU-a6b304f4-2be9-9d3a-3e7d-3f3eb0936833",
+    "NVIDIA_VISIBLE_DEVICES": null,
+    "CUDA_DEVICE_ORDER": null,
+    "visible_cuda_count": 1,
+    "selected_device_uuid": "a6b304f4-2be9-9d3a-3e7d-3f3eb0936833",
+    "selected_device_name": "NVIDIA H100 80GB HBM3",
+    "selected_device_total_memory": 85017493504,
+    "selected_logical_index": 0
+  },
+  "torch": "2.5.1+cu124",
+  "numpy": "1.24.4",
+  "cuda_runtime": "12.4",
+  "features_sha256": "c2b8592802bb9c209db61f44370271944af56c6a475c8635d3db930eb80cd8f9"
+}

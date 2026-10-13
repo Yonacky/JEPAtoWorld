@@ -1,0 +1,15 @@
+{
+  "utc": "2026-10-13T02:48:52.899778+00:00",
+  "status": "frozen before access to new production data; old-data independent audit passed",
+  "files": {
+    "scripts\\evaluate_frozen_oblique_20261013.py": "980560f508a8232e4548a5e17f42431690c80c3236a633cf9350d59042c724c4",
+    "runs\\frozen_oblique_entry_20261013\\frozen_config.json": "5fe9242cb49561aaa2a18f395113131fe01a5617fb0c91d5ec2d5c126d8349f4",
+    "docs\\nonorthogonal_newdata_protocol_20261013.md": "8fd7c41a6cdd71c1546cd447d5506844055642bab8333ab6196506fb49c4a3ce",
+    "docs\\frozen_oblique_confirmation_protocol_20261013.txt": "5894e391084dafb7b9b3245e3e43b659d415dbd7074fb1e57eecdd120cc0d343"
+  },
+  "fixed_models": {
+    "models": "95416df9ac024d84010b5589cd89c2ffd45a55779f8f2b400f45eaec11f2c854",
+    "joint0": "db0ab731050521e3e928af1c09e942654a73169a70d97ecd9a13b9953e027d6c",
+    "selection": "bbde9a784845a1d3f80316681d24df46c924f84262885facbf6cb2278a862f69"
+  }
+}

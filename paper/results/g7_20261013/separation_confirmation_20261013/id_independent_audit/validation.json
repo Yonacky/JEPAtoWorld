@@ -1,0 +1,87 @@
+{
+  "status": "PASS_SAVED_DATA_AUDIT",
+  "seed": 2026101301,
+  "scenes": 64,
+  "frames": 1728,
+  "single_factor_pairs": 5184,
+  "two_reference_indices_per_scene": [
+    0,
+    26
+  ],
+  "simulation_steps": "not independently reconstructed from saved data; monkeypatch guard checked in producer source",
+  "render_state_maxabs": 0.0,
+  "render_to_saved_state_maxabs": 0.0,
+  "aba_state_maxabs": 0.0,
+  "repeat_pixels_exact": true,
+  "aba_pixels_exact": true,
+  "nontarget_state_maxabs": 0.0,
+  "minimum_changed_pixels_by_factor": [
+    469,
+    241,
+    6500
+  ],
+  "actual_bullet_records": 1792,
+  "old_context_checks": [
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/pilot/contexts.json",
+      "sha256": "4b587a42d8ab167c00b3fa18a2b569636a007967ff5f7156c9626d700231da4e",
+      "scenes": 48,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.03236795642239776
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/confirmation/contexts.json",
+      "sha256": "09b860e096bad403c84b4d98d9107c81d7f277d2dbba727a3b54d4a1cc83f51d",
+      "scenes": 24,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.03753726505278995
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/step3b_data/contexts.json",
+      "sha256": "9f4522718499981459e629657ad8033e1184e71b7b9fc31e47dad50c6d26d218",
+      "scenes": 32,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.03830836925548797
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/repair_data/contexts.json",
+      "sha256": "d56043debf93010330f5b6cd4276c5909b16fce121adcce470a17dda9c212179",
+      "scenes": 32,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.049266030042058755
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/oat_data/contexts.json",
+      "sha256": "a860a2cd21b1d4135dd5459cb33ce527530cf34a2b39c4291bec5239a0f79682",
+      "scenes": 56,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.03329275011099697
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/tworef_id_data/contexts.json",
+      "sha256": "ca1e4d5c6fb3bebc2b4e9286868c6aaad450495163cd8ce7ba40996893bf277c",
+      "scenes": 32,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.037631203274212766
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/intervention_20261012/tworef_ood_data/contexts.json",
+      "sha256": "aadf172d7b2c6ea1511dd998ec3ab429d7fe069b037ec4313a961f8f0fc57c15",
+      "scenes": 32,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.08477897349855856
+    },
+    {
+      "path": "/home/kemove/datasets/jepa_factor_study/experiments/separation_confirmation_20261013/ood_data/contexts.json",
+      "sha256": "bedf9adb672abf2db5d499805eb4222021086e370bcf5f95ac81f804cb1330e2",
+      "scenes": 64,
+      "matching_within_1e12": 0,
+      "nearest_maxnorm_context_difference": 0.09400679259849298
+    }
+  ],
+  "peer_context_checked": true,
+  "prepared_rows_exact": true,
+  "dataset_sha256": "ca706e769b3bdc871252331184357afee35d50593e4029764d886867e087dab8",
+  "audit_raw_sha256": "2c54dc66f8e009a3d0576a290b65110249ce1697ae4c94aad903c5c75befbd0a",
+  "audit_source_sha256": "c7f74c216225f0e80f4d0d8b16168422debedac6b73388155b68f08f9809d518"
+}
